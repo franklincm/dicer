@@ -1,31 +1,45 @@
-### Grammar
+# Grammar
 
-1. digit → 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-2. **nzero** → 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-3. **num** →  **nzero** **num'**
-4. **num'** → digit | ε
-5. **Δ** → d | D
-6. **die** -> **num** **Δ** **num**
-7. **extrema** → MIN | MAX
-8. **expression** → **simple_expression** **expression'**
-9. **expression'** → **addop** **extrema** | **addop** **extrema** | ε
-10. **simple_expression** → **term** **simple_expression'**
-11. **simple_expression'** → **addop** **term** **simple_expression'** | ε
-12. **term** → **factor** **term'**
-13. **term'** → **mulop** **factor** **term'** | ε
-14. **factor** → **num** **factor'** | **min** | **max** | **count**
-15. **factor'** → **Δ** **num** | ε
-16. **min** → min( **simple_expression** , **simple_expression** )
-17. **max** → max( **simple_expression** , **simple_expression** )
-18. **count** → count( **simple_expression**, **condition_list** )
-19. **condition_list** → **condtion** **condtion_list'**
-20. **condition_list'** → , **condition** **condition_list'** | ε
-21. **condition** → **relop** **num**
-22. **relop** → > | < | >= | <= | =
-23. **mulop** → * | /
-24. **addop** → + | -
+1. Δ → **d** | **D**
+3. _expression_ → _simple_expression_ _expression'_
+4. _expression'_ → **addop** **extrema** | ε
+5. _simple_expression_ → _term_ _simple_expression'_
+6. _simple_expression'_ → **addop** _term_ _simple_expression'_ | ε
+7. term → _factor_ _term'_
+8. term' → **mulop** _factor_ _term'_ | ε
+9. factor → **num** _factor'_ | _min_ | _max_ | _count_
+10. factor' → _Δ_ **num** | ε
+11. _min_ → **min** **(** _simple_expression_ **,** _simple_expression_ **)**
+12. _max_ → **max** **(** _simple_expression_ **,** _simple_expression_ **)**
+13. _count_ → **count** **(** _simple_expression_ **,** _condition_list_ **)**
+14. _condition_list_ → _condtion_ _condtion_list'_
+15. _condition_list'_ → **,** _condition_ _condition_list'_ | ε
+16. _condition_ → **relop** **num**
 ---
 
+### tokens
+1. **num** → \[1-9\]\[0-9\]*
+2. **addop** → + | -
+3. **mulop** → * | /
+4. **relop** → > | < | >= | <= | =
+5. **extrema** → MIN | MAX
+6. **min** → min
+7. **max** → max
+8. **count** → count
+---
+
+### machines
+- whitespace
+- num
+- relop
+- addop
+- mulop
+- extrema
+- min
+- max
+- count
+- catchall
+---
 ### example valid strings
 
 ```
@@ -38,24 +52,4 @@ min(2d20, 15)
 count(4d6, >4)
 count(10d6, >=5, =1, =6, <=4)
 ```
----
 
----
-
-### tokens
-1. `digit`
-2. `extrema`
-3. `(`
-4. `)`
-5. `+`
-6. `-`
-7. `*`
-8. `/`
-9. `=`
-10. `<`
-11. `>`
-12. `min`
-13. `max`
-14. `count`
-
-### machines
