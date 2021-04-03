@@ -1,24 +1,22 @@
 # Grammar
 
-1. _d_ → **d** | **D**
-3. _expression_ → _simple_expression_ _expression'_
-4. _expression'_ → **addop** **extrema** | ε
-5. _simple_expression_ → _term_ _simple_expression'_
-6. _simple_expression'_ → **addop** _term_ _simple_expression'_ | ε
-7. term → _factor_ _term'_
-8. term' → **mulop** _factor_ _term'_ | ε
-9. factor → **num** _factor'_ | _min_ | _max_ | _count_
-10. factor' → _d_ **num** | ε
-11. _min_ → **min** **(** _simple_expression_ **,** _simple_expression_ **)**
-12. _max_ → **max** **(** _simple_expression_ **,** _simple_expression_ **)**
-13. _count_ → **count** **(** _simple_expression_ **,** _condition_list_ **)**
-14. _condition_list_ → _condtion_ _condtion_list'_
-15. _condition_list'_ → **,** _condition_ _condition_list'_ | ε
-16. _condition_ → **relop** **num**
+1. _expression_ → _simple_expression_ _expression'_ | **count** **(** **die** **,** _condition_list_ **)**
+2. _expression'_ → **addop** **extrema** | ε
+3. _simple_expression_ → _term_ _simple_expression'_
+4. _simple_expression'_ → **addop** _term_ _simple_expression'_ | ε
+5. term → _factor_ _term'_
+6. term' → **mulop** _factor_ _term'_ | ε
+7. factor → **num** | **die** | _min_ | _max_
+8. _min_ → **min** **(** _simple_expression_ **,** _simple_expression_ **)**
+9. _max_ → **max** **(** _simple_expression_ **,** _simple_expression_ **)**
+10. _condition_list_ → _condtion_ _condtion_list'_
+11. _condition_list'_ → **,** _condition_ _condition_list'_ | ε
+12. _condition_ → **relop** **num**
 ---
 
 ### tokens
 1. **num** → \[1-9\]\[0-9\]*
+2. **die** → **num** [d|D] **num**
 2. **addop** → + | -
 3. **mulop** → * | /
 4. **relop** → > | < | >= | <= | =
@@ -30,6 +28,7 @@
 
 ### machines
 - whitespace
+- die
 - num
 - relop
 - addop
