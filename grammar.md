@@ -9,7 +9,7 @@
 7. factor → **num** | **die** | _min_ | _max_
 8. _min_ → **min** **(** _simple_expression_ **,** _simple_expression_ **)**
 9. _max_ → **max** **(** _simple_expression_ **,** _simple_expression_ **)**
-10. _condition_list_ → _condtion_ _condtion_list'_
+10. _condition_list_ → _condition_ _condition_list'_
 11. _condition_list'_ → **,** _condition_ _condition_list'_ | ε
 12. _condition_ → **relop** **num**
 ---
@@ -44,6 +44,8 @@
 ```
 max(10, 1d20 + 4) # evaluate 2 simple_expressions, return max value
 min(2d20, 15)
+
+max(10, max(1d10, 1d20))
 
 4d6 - MIN # roll 4 six-sided dice, subtract the lowest value
 4d6 - MAX # roll 4 six-sided dice, subtract the highest value
