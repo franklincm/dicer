@@ -1,6 +1,6 @@
 # Grammar
 
-1. Δ → **d** | **D**
+1. _d_ → **d** | **D**
 3. _expression_ → _simple_expression_ _expression'_
 4. _expression'_ → **addop** **extrema** | ε
 5. _simple_expression_ → _term_ _simple_expression'_
@@ -8,7 +8,7 @@
 7. term → _factor_ _term'_
 8. term' → **mulop** _factor_ _term'_ | ε
 9. factor → **num** _factor'_ | _min_ | _max_ | _count_
-10. factor' → _Δ_ **num** | ε
+10. factor' → _d_ **num** | ε
 11. _min_ → **min** **(** _simple_expression_ **,** _simple_expression_ **)**
 12. _max_ → **max** **(** _simple_expression_ **,** _simple_expression_ **)**
 13. _count_ → **count** **(** _simple_expression_ **,** _condition_list_ **)**
