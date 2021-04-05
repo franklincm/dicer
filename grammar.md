@@ -4,7 +4,7 @@
 2. _expression'_ → **addop** _term_ _expression'_ | ε
 3. _term_ → _factor_ _term'_
 4. _term'_ → **mulop** _factor_ _term'_ | ε
-5. _factor_ → **num** | **die** _factor'_ | **(** _expression_ **)** |_min_ | _max_
+5. _factor_ → **num** | **die** _factor'_ | **(** _expression_ **)** | _min_ | _max_
 6. _factor'_ → **addop** **extrema** | ε
 7. _min_ → **min** **(** _expression_ **,** _expression_ **)**
 8. _max_ → **max** **(** _expression_ **,** _expression_ **)**
