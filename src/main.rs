@@ -1,12 +1,6 @@
-use lex::Token;
+use lex::*;
 
 fn main() {
-    println!("Hello, world!");
-
-    let t = Token {
-        ttype: 1,
-        lexeme: String::from("test"),
-        attr: 1,
-        f: 0,
-    };
+    let t = dfa_whitespace("            1d20 + 4", 0);
+    println!("{}", t.lexeme);
 }
