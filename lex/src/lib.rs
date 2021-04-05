@@ -8,12 +8,11 @@ pub struct Token {
 }
 
 pub fn dfa_whitespace(src: &str, i: i32) -> i32 {
-
     let mut k = i;
-    let len:i32 = src.len().try_into().unwrap();
+    let len: i32 = src.len().try_into().unwrap();
 
-    if k > len || k < 0{
-        return -1
+    if k > len || k < 0 {
+        return -1;
     }
 
     while k < len && &src.chars().nth(k.try_into().unwrap()).unwrap() == &' ' {
