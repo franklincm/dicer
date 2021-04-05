@@ -1,3 +1,6 @@
+use lex::*;
+
 fn main() {
-    println!("Hello, world!");
+    let t = dfa_whitespace("            1d20 + 4", 10);
+    println!("got: {}", t);
 }

@@ -3,3 +3,10 @@
 [[package]]
 name = "dicer"
 version = "0.1.0"
+dependencies = [
+ "lex",
+]
+
+[[package]]
+name = "lex"
+version = "0.1.0"
