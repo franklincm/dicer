@@ -11,12 +11,30 @@ pub struct Token {
 impl Token {
     pub fn new() -> Token {
         Token {
-            ttype: constants::TOKEN_LEXERR,
+            ttype: constants::TOKEN_UNRECSYM,
             lexeme: String::from(""),
             attr: 0,
             f: 0,
         }
     }
+}
+
+pub fn nfa(pos: i32, src: &String) -> Token {
+    let mut tok = Token::new();
+    tok.f = pos;
+
+    dfa_whitespace(&mut tok, src);
+    if tok.ttype != constants::TOKEN_UNRECSYM {
+        return tok;
+    }
+
+    dfa_catchall(&mut tok, src);
+    if tok.ttype != constants::TOKEN_UNRECSYM {
+        return tok;
+    }
+
+    tok.ttype = constants::TOKEN_LEXERR;
+    tok
 }
 
 pub fn dfa_whitespace(tok: &mut Token, src: &String) {
@@ -31,9 +49,11 @@ pub fn dfa_whitespace(tok: &mut Token, src: &String) {
         k += 1;
     }
 
-    tok.ttype = constants::TOKEN_WS;
-    tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
-    tok.f = k;
+    if k > tok.f {
+        tok.ttype = constants::TOKEN_WS;
+        tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
+        tok.f = k;
+    }
 }
 
 pub fn dfa_catchall(tok: &mut Token, src: &String) {
@@ -66,7 +86,7 @@ pub fn dfa_catchall(tok: &mut Token, src: &String) {
         tok.ttype = constants::TOKEN_RPAREN;
     }
 
-    if tok.f < k {
+    if k > tok.f {
         tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
         tok.f = k;
     }
@@ -91,7 +111,7 @@ mod tests {
         let mut tok = Token::new();
 
         dfa_whitespace(&mut tok, &String::from("1d20 + 4"));
-        assert_eq!(tok.ttype, constants::TOKEN_WS);
+        assert_eq!(tok.ttype, constants::TOKEN_UNRECSYM);
         assert_eq!(tok.f, 0);
         assert_eq!(tok.lexeme, String::from(""));
     }
@@ -102,7 +122,7 @@ mod tests {
         tok.f = 20;
 
         dfa_whitespace(&mut tok, &String::from("1d20 + 4"));
-        assert_eq!(tok.ttype, constants::TOKEN_LEXERR);
+        assert_eq!(tok.ttype, constants::TOKEN_UNRECSYM);
         assert_eq!(tok.f, 20);
         assert_eq!(tok.lexeme, String::from(""));
     }
@@ -113,7 +133,7 @@ mod tests {
         tok.f = -20;
 
         dfa_whitespace(&mut tok, &String::from("1d20 + 4"));
-        assert_eq!(tok.ttype, constants::TOKEN_LEXERR);
+        assert_eq!(tok.ttype, constants::TOKEN_UNRECSYM);
         assert_eq!(tok.f, -20);
         assert_eq!(tok.lexeme, String::from(""));
     }

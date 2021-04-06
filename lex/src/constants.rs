@@ -1,3 +1,4 @@
+pub const TOKEN_UNRECSYM: i32 = 100;
 pub const TOKEN_LEXERR: i32 = 99;
 pub const TOKEN_WS: i32 = 0;
 pub const TOKEN_ADDOP: i32 = 1;
