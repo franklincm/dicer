@@ -1,4 +1,4 @@
-mod constants;
+pub mod constants;
 use std::convert::TryInto;
 
 pub struct Token {
@@ -28,12 +28,23 @@ pub fn nfa(pos: i32, src: &String) -> Token {
         return tok;
     }
 
+    dfa_num(&mut tok, src);
+    if tok.ttype != constants::TOKEN_UNRECSYM {
+        return tok;
+    }
+
+    dfa_d(&mut tok, src);
+    if tok.ttype != constants::TOKEN_UNRECSYM {
+        return tok;
+    }
+
     dfa_catchall(&mut tok, src);
     if tok.ttype != constants::TOKEN_UNRECSYM {
         return tok;
     }
 
     tok.ttype = constants::TOKEN_LEXERR;
+    tok.f += 1;
     tok
 }
 
@@ -92,121 +103,47 @@ pub fn dfa_catchall(tok: &mut Token, src: &String) {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub fn dfa_num(tok: &mut Token, src: &String) {
+    let mut k = tok.f;
+    let len: i32 = src.len().try_into().unwrap();
 
-    #[test]
-    fn test_ws_offset() {
-        let mut tok = Token::new();
-
-        dfa_whitespace(&mut tok, &String::from(" 1d20 + 4"));
-        assert_eq!(tok.ttype, constants::TOKEN_WS);
-        assert_eq!(tok.f, 1);
-        assert_eq!(tok.lexeme, String::from(" "));
+    if k > len || k < 0 {
+        return;
     }
 
-    #[test]
-    fn test_ws_no_offset() {
-        let mut tok = Token::new();
-
-        dfa_whitespace(&mut tok, &String::from("1d20 + 4"));
-        assert_eq!(tok.ttype, constants::TOKEN_UNRECSYM);
-        assert_eq!(tok.f, 0);
-        assert_eq!(tok.lexeme, String::from(""));
+    if src.chars().nth(0.try_into().unwrap()).unwrap() == '0' {
+        tok.ttype = constants::TOKEN_LEXERR;
+        return;
     }
 
-    #[test]
-    fn test_ws_offset_too_large() {
-        let mut tok = Token::new();
-        tok.f = 20;
-
-        dfa_whitespace(&mut tok, &String::from("1d20 + 4"));
-        assert_eq!(tok.ttype, constants::TOKEN_UNRECSYM);
-        assert_eq!(tok.f, 20);
-        assert_eq!(tok.lexeme, String::from(""));
+    while k < len && src.chars().nth(k.try_into().unwrap()).unwrap().is_digit(10) {
+        k += 1;
     }
 
-    #[test]
-    fn test_ws_offset_too_small() {
-        let mut tok = Token::new();
-        tok.f = -20;
+    if k > tok.f {
+        tok.ttype = constants::TOKEN_NUM;
+        tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
+        tok.f = k;
+    }
+}
 
-        dfa_whitespace(&mut tok, &String::from("1d20 + 4"));
-        assert_eq!(tok.ttype, constants::TOKEN_UNRECSYM);
-        assert_eq!(tok.f, -20);
-        assert_eq!(tok.lexeme, String::from(""));
+pub fn dfa_d(tok: &mut Token, src: &String) {
+    let mut k = tok.f;
+    let len: i32 = src.len().try_into().unwrap();
+
+    if k > len || k < 0 {
+        return;
     }
 
-    #[test]
-    fn test_catchall_star() {
-        let mut tok = Token::new();
-        dfa_catchall(&mut tok, &String::from("*"));
-        assert_eq!(tok.ttype, constants::TOKEN_MULOP);
-        assert_eq!(tok.f, 1);
-        assert_eq!(tok.lexeme, String::from("*"));
+    match src.chars().nth(k.try_into().unwrap()) {
+        Some('d') => k += 1,
+        Some('D') => k += 1,
+        _ => return,
     }
 
-    #[test]
-    fn test_catchall_div() {
-        let mut tok = Token::new();
-        dfa_catchall(&mut tok, &String::from("/"));
-        assert_eq!(tok.ttype, constants::TOKEN_MULOP);
-        assert_eq!(tok.f, 1);
-        assert_eq!(tok.lexeme, String::from("/"));
-    }
-
-    #[test]
-    fn test_catchall_plus() {
-        let mut tok = Token::new();
-        dfa_catchall(&mut tok, &String::from("+"));
-        assert_eq!(tok.ttype, constants::TOKEN_ADDOP);
-        assert_eq!(tok.f, 1);
-        assert_eq!(tok.lexeme, String::from("+"));
-    }
-
-    #[test]
-    fn test_catchall_dash() {
-        let mut tok = Token::new();
-        dfa_catchall(&mut tok, &String::from("-"));
-        assert_eq!(tok.ttype, constants::TOKEN_ADDOP);
-        assert_eq!(tok.f, 1);
-        assert_eq!(tok.lexeme, String::from("-"));
-    }
-
-    #[test]
-    fn test_catchall_comma() {
-        let mut tok = Token::new();
-        dfa_catchall(&mut tok, &String::from(","));
-        assert_eq!(tok.ttype, constants::TOKEN_COMMA);
-        assert_eq!(tok.f, 1);
-        assert_eq!(tok.lexeme, String::from(","));
-    }
-
-    #[test]
-    fn test_catchall_lparen() {
-        let mut tok = Token::new();
-        dfa_catchall(&mut tok, &String::from("("));
-        assert_eq!(tok.ttype, constants::TOKEN_LPAREN);
-        assert_eq!(tok.f, 1);
-        assert_eq!(tok.lexeme, String::from("("));
-    }
-
-    #[test]
-    fn test_catchall_rparen() {
-        let mut tok = Token::new();
-        dfa_catchall(&mut tok, &String::from(")"));
-        assert_eq!(tok.ttype, constants::TOKEN_RPAREN);
-        assert_eq!(tok.f, 1);
-        assert_eq!(tok.lexeme, String::from(")"));
-    }
-
-    #[test]
-    fn test_catchall_eof() {
-        let mut tok = Token::new();
-        dfa_catchall(&mut tok, &String::from(""));
-        assert_eq!(tok.ttype, constants::TOKEN_EOF);
-        assert_eq!(tok.f, 0);
-        assert_eq!(tok.lexeme, String::from(""));
+    if k > tok.f {
+        tok.ttype = constants::TOKEN_D;
+        tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
+        tok.f = k;
     }
 }
