@@ -38,6 +38,11 @@ pub fn nfa(pos: i32, src: &String) -> Token {
         return tok;
     }
 
+    dfa_relop(&mut tok, src);
+    if tok.ttype != constants::TOKEN_UNRECSYM {
+        return tok;
+    }
+
     dfa_catchall(&mut tok, src);
     if tok.ttype != constants::TOKEN_UNRECSYM {
         return tok;
@@ -143,6 +148,39 @@ pub fn dfa_d(tok: &mut Token, src: &String) {
 
     if k > tok.f {
         tok.ttype = constants::TOKEN_D;
+        tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
+        tok.f = k;
+    }
+}
+
+pub fn dfa_relop(tok: &mut Token, src: &String) {
+    let mut k = tok.f;
+    let len: i32 = src.len().try_into().unwrap();
+
+    if k > len || k < 0 {
+        return;
+    }
+
+    match src.chars().nth(k.try_into().unwrap()) {
+        Some('<') => {
+            k += 1;
+            match src.chars().nth(k.try_into().unwrap()) {
+                Some('=') => k += 1,
+                _ => (),
+            };
+        }
+        Some('>') => {
+            k += 1;
+            match src.chars().nth(k.try_into().unwrap()) {
+                Some('=') => k += 1,
+                _ => (),
+            };
+        }
+        _ => return,
+    }
+
+    if k > tok.f {
+        tok.ttype = constants::TOKEN_RELOP;
         tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
         tok.f = k;
     }

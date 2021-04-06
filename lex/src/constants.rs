@@ -9,3 +9,4 @@ pub const TOKEN_RPAREN: i32 = 5;
 pub const TOKEN_EOF: i32 = 6;
 pub const TOKEN_D: i32 = 7;
 pub const TOKEN_NUM: i32 = 8;
+pub const TOKEN_RELOP: i32 = 9;
