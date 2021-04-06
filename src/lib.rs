@@ -11,6 +11,10 @@ pub fn token_type_to_str(ttype: i32) -> String {
         7 => String::from("TOKEN_D"),
         8 => String::from("TOKEN_NUM"),
         9 => String::from("TOKEN_RELOP"),
+        10 => String::from("TOKEN_EXTREMA"),
+        11 => String::from("TOKEN_MIN"),
+        12 => String::from("TOKEN_MAX"),
+        13 => String::from("TOKEN_COUNT"),
         _ => String::from("TOKEN_UNRECSYM"),
     }
 }

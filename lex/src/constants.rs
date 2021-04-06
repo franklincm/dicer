@@ -10,3 +10,7 @@ pub const TOKEN_EOF: i32 = 6;
 pub const TOKEN_D: i32 = 7;
 pub const TOKEN_NUM: i32 = 8;
 pub const TOKEN_RELOP: i32 = 9;
+pub const TOKEN_EXTREMA: i32 = 10;
+pub const TOKEN_MIN: i32 = 11;
+pub const TOKEN_MAX: i32 = 12;
+pub const TOKEN_COUNT: i32 = 13;
