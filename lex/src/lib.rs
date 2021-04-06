@@ -33,6 +33,11 @@ pub fn nfa(pos: i32, src: &String) -> Token {
         return tok;
     }
 
+    dfa_die(&mut tok, src);
+    if tok.ttype != constants::TOKEN_UNRECSYM {
+        return tok;
+    }
+
     tok.ttype = constants::TOKEN_LEXERR;
     tok
 }
@@ -87,6 +92,38 @@ pub fn dfa_catchall(tok: &mut Token, src: &String) {
     }
 
     if k > tok.f {
+        tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
+        tok.f = k;
+    }
+}
+
+pub fn dfa_die(tok: &mut Token, src: &String) {
+    let mut k = tok.f;
+    let len: i32 = src.len().try_into().unwrap();
+
+    if k > len || k < 0 {
+        return;
+    }
+
+    while k < len && src.chars().nth(k.try_into().unwrap()).unwrap().is_digit(10) {
+        k += 1;
+    }
+
+    match src.chars().nth(k.try_into().unwrap()) {
+        Some('d') => k += 1,
+        Some('D') => k += 1,
+        _ => return,
+    }
+
+    // store temp position to see if we have the required following digits
+    let j = k;
+
+    while k < len && src.chars().nth(k.try_into().unwrap()).unwrap().is_digit(10) {
+        k += 1;
+    }
+
+    if k > j {
+        tok.ttype = constants::TOKEN_DIE;
         tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
         tok.f = k;
     }

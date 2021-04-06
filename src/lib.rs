@@ -8,6 +8,7 @@ pub fn token_type_to_str(ttype: i32) -> String {
         4 => String::from("TOKEN_LPAREN"),
         5 => String::from("TOKEN_RPAREN"),
         6 => String::from("TOKEN_EOF"),
+        7 => String::from("TOKEN_DIE"),
         _ => String::from("TOKEN_UNRECSYM"),
     }
 }
