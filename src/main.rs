@@ -1,20 +1,15 @@
 use dicer::*;
 use lex::*;
+use std::convert::TryInto;
 
 fn main() {
-    let test_str = String::from(" +");
+    let test_str2 = String::from(" ** / +++ -   *");
+    let len: i32 = test_str2.len().try_into().unwrap();
+    let mut pos = 0;
 
-    let mut tok1 = lex::Token::new();
-
-    dfa_whitespace(&mut tok1, &test_str);
-    println!("tok1.lexeme: \"{}\"", tok1.lexeme);
-    println!("tok1.f: {}", tok1.f);
-    println!("tok1.ttype: {}", token_type_to_str(tok1.ttype));
-
-    let mut tok2 = lex::Token::new();
-    tok2.f = tok1.f;
-    dfa_catchall(&mut tok2, &test_str);
-    println!("tok2.lexeme: \"{}\"", tok2.lexeme);
-    println!("tok2.f: {}", tok2.f);
-    println!("tok2.ttype: {}", token_type_to_str(tok2.ttype));
+    while pos != len {
+        let tok = nfa(pos, &test_str2);
+        println!("tok.ttype: {}", token_type_to_str(tok.ttype));
+        pos = tok.f;
+    }
 }
