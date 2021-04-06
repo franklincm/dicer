@@ -48,6 +48,21 @@ pub fn nfa(pos: i32, src: &String) -> Token {
         return tok;
     }
 
+    dfa_fmin(&mut tok, src);
+    if tok.ttype != constants::TOKEN_UNRECSYM {
+        return tok;
+    }
+
+    dfa_fmax(&mut tok, src);
+    if tok.ttype != constants::TOKEN_UNRECSYM {
+        return tok;
+    }
+
+    dfa_fcount(&mut tok, src);
+    if tok.ttype != constants::TOKEN_UNRECSYM {
+        return tok;
+    }
+
     dfa_catchall(&mut tok, src);
     if tok.ttype != constants::TOKEN_UNRECSYM {
         return tok;
@@ -194,7 +209,7 @@ pub fn dfa_relop(tok: &mut Token, src: &String) {
 pub fn dfa_extrema(tok: &mut Token, src: &String) {
     let len: i32 = src.len().try_into().unwrap();
 
-    if tok.f > len || tok.f < 0 {
+    if tok.f > len || tok.f < 0 || (len - tok.f) < 3 {
         return;
     }
 
@@ -204,5 +219,53 @@ pub fn dfa_extrema(tok: &mut Token, src: &String) {
         tok.ttype = constants::TOKEN_EXTREMA;
         tok.lexeme = (&src[tok.f as usize..(tok.f + 3) as usize]).to_string();
         tok.f += 3;
+    }
+}
+
+pub fn dfa_fmin(tok: &mut Token, src: &String) {
+    let len: i32 = src.len().try_into().unwrap();
+
+    if tok.f > len || tok.f < 0 || (len - tok.f) < 3 {
+        return;
+    }
+
+    let lex = &src[tok.f as usize..(tok.f + 3) as usize];
+
+    if lex == "min" {
+        tok.ttype = constants::TOKEN_FMIN;
+        tok.lexeme = (&src[tok.f as usize..(tok.f + 3) as usize]).to_string();
+        tok.f += 3;
+    }
+}
+
+pub fn dfa_fmax(tok: &mut Token, src: &String) {
+    let len: i32 = src.len().try_into().unwrap();
+
+    if tok.f > len || tok.f < 0 || (len - tok.f) < 3 {
+        return;
+    }
+
+    let lex = &src[tok.f as usize..(tok.f + 3) as usize];
+
+    if lex == "max" {
+        tok.ttype = constants::TOKEN_FMAX;
+        tok.lexeme = (&src[tok.f as usize..(tok.f + 3) as usize]).to_string();
+        tok.f += 3;
+    }
+}
+
+pub fn dfa_fcount(tok: &mut Token, src: &String) {
+    let len: i32 = src.len().try_into().unwrap();
+
+    if tok.f > len || tok.f < 0 || (len - tok.f) < 5 {
+        return;
+    }
+
+    let lex = &src[tok.f as usize..(tok.f + 5) as usize];
+
+    if lex == "count" {
+        tok.ttype = constants::TOKEN_FCOUNT;
+        tok.lexeme = (&src[tok.f as usize..(tok.f + 5) as usize]).to_string();
+        tok.f += 5;
     }
 }
