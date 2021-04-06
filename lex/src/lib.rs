@@ -43,6 +43,11 @@ pub fn nfa(pos: i32, src: &String) -> Token {
         return tok;
     }
 
+    dfa_extrema(&mut tok, src);
+    if tok.ttype != constants::TOKEN_UNRECSYM {
+        return tok;
+    }
+
     dfa_catchall(&mut tok, src);
     if tok.ttype != constants::TOKEN_UNRECSYM {
         return tok;
@@ -183,5 +188,21 @@ pub fn dfa_relop(tok: &mut Token, src: &String) {
         tok.ttype = constants::TOKEN_RELOP;
         tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
         tok.f = k;
+    }
+}
+
+pub fn dfa_extrema(tok: &mut Token, src: &String) {
+    let len: i32 = src.len().try_into().unwrap();
+
+    if tok.f > len || tok.f < 0 {
+        return;
+    }
+
+    let lex = &src[tok.f as usize..(tok.f + 3) as usize];
+
+    if lex == "MIN" || lex == "MAX" {
+        tok.ttype = constants::TOKEN_EXTREMA;
+        tok.lexeme = (&src[tok.f as usize..(tok.f + 3) as usize]).to_string();
+        tok.f += 3;
     }
 }
