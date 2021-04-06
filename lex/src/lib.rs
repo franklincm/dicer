@@ -28,17 +28,23 @@ pub fn nfa(pos: i32, src: &String) -> Token {
         return tok;
     }
 
+    dfa_num(&mut tok, src);
+    if tok.ttype != constants::TOKEN_UNRECSYM {
+        return tok;
+    }
+
+    dfa_d(&mut tok, src);
+    if tok.ttype != constants::TOKEN_UNRECSYM {
+        return tok;
+    }
+
     dfa_catchall(&mut tok, src);
     if tok.ttype != constants::TOKEN_UNRECSYM {
         return tok;
     }
 
-    dfa_die(&mut tok, src);
-    if tok.ttype != constants::TOKEN_UNRECSYM {
-        return tok;
-    }
-
     tok.ttype = constants::TOKEN_LEXERR;
+    tok.f += 1;
     tok
 }
 
@@ -97,7 +103,7 @@ pub fn dfa_catchall(tok: &mut Token, src: &String) {
     }
 }
 
-pub fn dfa_die(tok: &mut Token, src: &String) {
+pub fn dfa_num(tok: &mut Token, src: &String) {
     let mut k = tok.f;
     let len: i32 = src.len().try_into().unwrap();
 
@@ -105,12 +111,28 @@ pub fn dfa_die(tok: &mut Token, src: &String) {
         return;
     }
 
-    if &src.chars().nth(k.try_into().unwrap()).unwrap() == &'0' {
+    if src.chars().nth(0.try_into().unwrap()).unwrap() == '0' {
+        tok.ttype = constants::TOKEN_LEXERR;
         return;
     }
 
     while k < len && src.chars().nth(k.try_into().unwrap()).unwrap().is_digit(10) {
         k += 1;
+    }
+
+    if k > tok.f {
+        tok.ttype = constants::TOKEN_NUM;
+        tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
+        tok.f = k;
+    }
+}
+
+pub fn dfa_d(tok: &mut Token, src: &String) {
+    let mut k = tok.f;
+    let len: i32 = src.len().try_into().unwrap();
+
+    if k > len || k < 0 {
+        return;
     }
 
     match src.chars().nth(k.try_into().unwrap()) {
@@ -119,15 +141,8 @@ pub fn dfa_die(tok: &mut Token, src: &String) {
         _ => return,
     }
 
-    // store temp position to see if we have the required following digits
-    let j = k;
-
-    while k < len && src.chars().nth(k.try_into().unwrap()).unwrap().is_digit(10) {
-        k += 1;
-    }
-
-    if k > j {
-        tok.ttype = constants::TOKEN_DIE;
+    if k > tok.f {
+        tok.ttype = constants::TOKEN_D;
         tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
         tok.f = k;
     }
