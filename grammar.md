@@ -1,14 +1,14 @@
 # Grammar
 
-1. _expression_ → _term_ _expression'_ | **count** **(** **die** **,** _condition_list_ **)**
+1. _expression_ → _term_ _expression'_ | **fcount** **(** **die** **,** _condition_list_ **)**
 2. _expression'_ → **addop** _term_ _expression'_ | ε
 3. _term_ → _factor_ _term'_
 4. _term'_ → **mulop** _factor_ _term'_ | ε
 5. _factor_ → **num** _factor'_ | **(** _expression_ **)** | _min_ | _max_
 6. _factor'_ → **d** **num** _factor'_ | ε
 7. _factor''_ → **addop** **extrema** | ε
-8. _min_ → **min** **(** _expression_ **,** _expression_ **)**
-9. _max_ → **max** **(** _expression_ **,** _expression_ **)**
+8. _min_ → **fmin** **(** _expression_ **,** _expression_ **)**
+9. _max_ → **fmax** **(** _expression_ **,** _expression_ **)**
 10. _condition_list_ → _condition_ _condition_list'_
 11. _condition_list'_ → **,** _condition_ _condition_list'_ | ε
 12. _condition_ → **relop** **num**
