@@ -3,7 +3,7 @@ use lex::*;
 use std::convert::TryInto;
 
 fn main() {
-    let test = String::from("1d20 + 5 * (2d12) <= 5 + MIN - MAX");
+    let test = String::from("1d20 + 5 * (2d12) <= 5 + MIN - MAX + min()");
     let len: i32 = test.len().try_into().unwrap();
     let mut pos = 0;
 
