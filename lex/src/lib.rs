@@ -100,6 +100,7 @@ pub fn dfa_catchall(tok: &mut Token, src: &String) {
         return;
     } else if k == len {
         tok.ttype = constants::TOKEN_EOF;
+        tok.f += 1;
         return;
     }
 
