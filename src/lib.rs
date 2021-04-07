@@ -1,3 +1,4 @@
+pub mod lex;
 pub fn token_type_to_str(ttype: i32) -> String {
     match ttype {
         99 => String::from("TOKEN_LEXERR"),

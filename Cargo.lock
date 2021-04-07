@@ -19,7 +19,6 @@ dependencies = [
 name = "dicer"
 version = "0.1.0"
 dependencies = [
- "lex",
  "rusty-hook",
 ]
 
@@ -65,18 +64,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "lex"
-version = "0.1.0"
-
-[[package]]
 name = "nias"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ab250442c86f1850815b5d268639dff018c0627022bc1940eb2d642ca1ce12f0"
-
-[[package]]
-name = "parse"
-version = "0.1.0"
 
 [[package]]
 name = "rusty-hook"

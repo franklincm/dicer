@@ -1,4 +1,5 @@
-use dicer::*;
+mod lex;
+use dicer::token_type_to_str;
 use lex::*;
 
 fn main() {
