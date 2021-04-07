@@ -1,11 +1,12 @@
-use lex::*;
+extern crate dicer;
+use dicer::lex::*;
 
 #[test]
 fn test_ws_offset() {
     let mut tok = Token::new();
 
     dfa_whitespace(&mut tok, &String::from(" 1d20 + 4"));
-    assert_eq!(tok.ttype, lex::constants::TOKEN_WS);
+    assert_eq!(tok.ttype, constants::TOKEN_WS);
     assert_eq!(tok.f, 1);
     assert_eq!(tok.lexeme, String::from(" "));
 }

@@ -1,4 +1,5 @@
-use lex::*;
+extern crate dicer;
+use dicer::lex::*;
 
 #[test]
 fn test_catchall_star() {

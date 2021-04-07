@@ -7,12 +7,5 @@ description = "Dice Roller"
 license = "MIT OR Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[workspace]
-members = [
-        "lex",
-        "parse",
-]
-
 [dependencies]
-lex = { path = "lex" }
 rusty-hook = "^0.11.2"
