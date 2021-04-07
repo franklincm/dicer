@@ -1,4 +1,6 @@
 pub mod constants;
+pub mod dfa;
+use dfa::ws::m_whitespace;
 use std::convert::TryInto;
 
 pub struct Token {
@@ -39,7 +41,7 @@ pub fn nfa(pos: i32, src: &String) -> Token {
     let mut tok = Token::new();
     tok.f = pos;
 
-    dfa_whitespace(&mut tok, src);
+    m_whitespace(&mut tok, src);
     if tok.ttype != constants::TOKEN_UNRECSYM {
         return tok;
     }
@@ -89,24 +91,24 @@ pub fn nfa(pos: i32, src: &String) -> Token {
     tok
 }
 
-pub fn dfa_whitespace(tok: &mut Token, src: &String) {
-    let mut k = tok.f;
-    let len: i32 = src.len().try_into().unwrap();
+// pub fn dfa_whitespace(tok: &mut Token, src: &String) {
+//     let mut k = tok.f;
+//     let len: i32 = src.len().try_into().unwrap();
 
-    if k > len || k < 0 {
-        return;
-    }
+//     if k > len || k < 0 {
+//         return;
+//     }
 
-    while k < len && &src.chars().nth(k.try_into().unwrap()).unwrap() == &' ' {
-        k += 1;
-    }
+//     while k < len && &src.chars().nth(k.try_into().unwrap()).unwrap() == &' ' {
+//         k += 1;
+//     }
 
-    if k > tok.f {
-        tok.ttype = constants::TOKEN_WS;
-        tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
-        tok.f = k;
-    }
-}
+//     if k > tok.f {
+//         tok.ttype = constants::TOKEN_WS;
+//         tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
+//         tok.f = k;
+//     }
+// }
 
 pub fn dfa_catchall(tok: &mut Token, src: &String) {
     let mut k = tok.f;
