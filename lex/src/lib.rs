@@ -19,6 +19,22 @@ impl Token {
     }
 }
 
+pub fn lex(src: &String) -> Vec<Token> {
+    let mut tokens: Vec<Token> = Vec::new();
+    let len: i32 = src.len().try_into().unwrap();
+    let mut pos = 0;
+
+    while pos != len + 1 {
+        let tok = nfa(pos, src);
+        pos = tok.f;
+
+        if tok.ttype != constants::TOKEN_WS {
+            tokens.push(tok)
+        }
+    }
+    tokens
+}
+
 pub fn nfa(pos: i32, src: &String) -> Token {
     let mut tok = Token::new();
     tok.f = pos;
@@ -100,6 +116,7 @@ pub fn dfa_catchall(tok: &mut Token, src: &String) {
         return;
     } else if k == len {
         tok.ttype = constants::TOKEN_EOF;
+        tok.f += 1;
         return;
     }
 

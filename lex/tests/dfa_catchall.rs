@@ -68,6 +68,6 @@ fn test_catchall_eof() {
     let mut tok = Token::new();
     dfa_catchall(&mut tok, &String::from(""));
     assert_eq!(tok.ttype, constants::TOKEN_EOF);
-    assert_eq!(tok.f, 0);
+    assert_eq!(tok.f, 1);
     assert_eq!(tok.lexeme, String::from(""));
 }
