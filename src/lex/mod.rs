@@ -1,6 +1,5 @@
 pub mod constants;
 pub mod dfa;
-use std::convert::TryInto;
 
 #[derive(Debug)]
 pub struct Token {
