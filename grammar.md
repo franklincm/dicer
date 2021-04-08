@@ -5,7 +5,7 @@
 3. _term_ → _factor_ _term'_
 4. _term'_ → **mulop** _factor_ _term'_ | ε
 5. _factor_ → **num** _factor'_ | **(** _expression_ **)** | _min_ | _max_
-6. _factor'_ → **d** **num** _factor'_ | ε
+6. _factor'_ → **d** **num** _factor''_ | ε
 7. _factor''_ → **addop** **extrema** | ε
 8. _min_ → **fmin** **(** _expression_ **,** _expression_ **)**
 9. _max_ → **fmax** **(** _expression_ **,** _expression_ **)**
