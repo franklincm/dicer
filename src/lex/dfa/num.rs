@@ -23,6 +23,7 @@ pub fn machine(tok: &mut Token, src: &String) {
         tok.ttype = constants::TOKEN_NUM;
         tok.lexeme = (&src[tok.f as usize..k as usize]).to_string();
         tok.f = k;
+        tok.attr = tok.lexeme.parse::<i32>().unwrap();
     }
 }
 
@@ -37,6 +38,7 @@ mod tests {
         assert_eq!(tok.ttype, constants::TOKEN_NUM);
         assert_eq!(tok.lexeme, "100");
         assert_eq!(tok.f, 3);
+        assert_eq!(tok.attr, 100);
     }
 
     #[test]
@@ -55,5 +57,6 @@ mod tests {
         assert_eq!(tok.ttype, constants::TOKEN_NUM);
         assert_eq!(tok.lexeme, "100");
         assert_eq!(tok.f, 3);
+        assert_eq!(tok.attr, 100);
     }
 }
