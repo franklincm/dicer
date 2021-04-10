@@ -7,7 +7,11 @@ pub fn start(src: &String) -> Token {
 }
 
 pub fn match_t(ttype: i32, token: Token, src: &String) -> Result<Token, i32> {
-    if token.ttype == ttype {
+    // if EOF, return default token
+    if token.ttype == ttype && ttype == constants::TOKEN_EOF {
+        println!("** end of parse **");
+        Ok(Token::new())
+    } else if token.ttype == ttype {
         let mut tok = nfa(src, token.f);
 
         // if whitespace, skip
@@ -16,6 +20,8 @@ pub fn match_t(ttype: i32, token: Token, src: &String) -> Result<Token, i32> {
         }
 
         Ok(tok)
+
+        // otherwise return error
     } else {
         eprintln!(
             "**SYNERR** Expecting {}, Received: {}",
