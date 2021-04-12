@@ -17,16 +17,23 @@ pub fn parse_expression(token: &mut Token, src: &String) {
         || token.ttype == constants::TOKEN_FMAX
     {
         print_descent("expression", "term");
-        parse_term(token, src);
+        parse_simple_expression(token, src);
         print_return("expression");
-
-        print_descent("expression", "expression_tail");
-        parse_expression_tail(token, src);
-        print_return("expression");
+    } else if token.ttype == constants::TOKEN_FCOUNT {
     }
 }
 
-pub fn parse_expression_tail(token: &mut Token, src: &String) {
+pub fn parse_simple_expression(token: &mut Token, src: &String) {
+    print_descent("expression", "term");
+    parse_term(token, src);
+    print_return("expression");
+
+    print_descent("expression", "expression_tail");
+    parse_simple_expression_tail(token, src);
+    print_return("expression");
+}
+
+pub fn parse_simple_expression_tail(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_ADDOP {
         parse::match_t(constants::TOKEN_ADDOP, token, src).unwrap();
 
@@ -35,22 +42,16 @@ pub fn parse_expression_tail(token: &mut Token, src: &String) {
         print_return("expression");
 
         print_descent("expression", "expression_tail");
-        parse_expression_tail(token, src);
+        parse_simple_expression_tail(token, src);
         print_return("expression");
     }
 }
 
 pub fn parse_term(token: &mut Token, src: &String) {
-    if token.ttype == constants::TOKEN_NUM
-        || token.ttype == constants::TOKEN_LPAREN
-        || token.ttype == constants::TOKEN_FMIN
-        || token.ttype == constants::TOKEN_FMAX
-    {
-        parse_factor(token, src);
-        print_descent("term", "term_tail");
-        parse_term_tail(token, src);
-        print_return("term");
-    }
+    parse_factor(token, src);
+    print_descent("term", "term_tail");
+    parse_term_tail(token, src);
+    print_return("term");
 }
 
 pub fn parse_term_tail(token: &mut Token, src: &String) {
@@ -81,7 +82,7 @@ pub fn parse_factor(token: &mut Token, src: &String) {
         parse::match_t(constants::TOKEN_LPAREN, token, src).unwrap();
 
         print_descent("factor", "expression");
-        parse_expression(token, src);
+        parse_simple_expression(token, src);
         print_return("factor");
 
         parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
@@ -114,39 +115,35 @@ pub fn parse_factor_tail_tail(token: &mut Token, src: &String) {
 }
 
 pub fn parse_fmin(token: &mut Token, src: &String) {
-    if token.ttype == constants::TOKEN_FMIN {
-        parse::match_t(constants::TOKEN_FMIN, token, src).unwrap();
-        parse::match_t(constants::TOKEN_LPAREN, token, src).unwrap();
+    parse::match_t(constants::TOKEN_FMIN, token, src).unwrap();
+    parse::match_t(constants::TOKEN_LPAREN, token, src).unwrap();
 
-        print_descent("fmin", "expression");
-        parse_expression(token, src);
-        print_return("fmin");
+    print_descent("fmin", "expression");
+    parse_simple_expression(token, src);
+    print_return("fmin");
 
-        parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
+    parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
 
-        print_descent("fmin", "expression");
-        parse_expression(token, src);
-        print_return("fmin");
+    print_descent("fmin", "expression");
+    parse_simple_expression(token, src);
+    print_return("fmin");
 
-        parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
-    }
+    parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }
 
 pub fn parse_fmax(token: &mut Token, src: &String) {
-    if token.ttype == constants::TOKEN_FMAX {
-        parse::match_t(constants::TOKEN_FMAX, token, src).unwrap();
-        parse::match_t(constants::TOKEN_LPAREN, token, src).unwrap();
+    parse::match_t(constants::TOKEN_FMAX, token, src).unwrap();
+    parse::match_t(constants::TOKEN_LPAREN, token, src).unwrap();
 
-        print_descent("fmax", "expression");
-        parse_expression(token, src);
-        print_return("fmax");
+    print_descent("fmax", "expression");
+    parse_simple_expression(token, src);
+    print_return("fmax");
 
-        parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
+    parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
 
-        print_descent("fmax", "expression");
-        parse_expression(token, src);
-        print_return("fmax");
+    print_descent("fmax", "expression");
+    parse_simple_expression(token, src);
+    print_return("fmax");
 
-        parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
-    }
+    parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }
