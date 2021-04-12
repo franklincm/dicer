@@ -6,20 +6,26 @@ pub fn start(src: &String) -> Token {
     nfa(src, 0)
 }
 
-pub fn match_t(ttype: i32, token: Token, src: &String) -> Result<Token, i32> {
+pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a Token, i32> {
+    let mut tok: Token;
+
     // if EOF, return default token
     if token.ttype == ttype && ttype == constants::TOKEN_EOF {
         println!("** end of parse **");
-        Ok(Token::new())
+        tok = Token::new();
+        *token = tok;
+        Ok(token)
     } else if token.ttype == ttype {
-        let mut tok = nfa(src, token.f);
+        tok = nfa(src, token.f);
 
         // if whitespace, skip
         if tok.ttype == constants::TOKEN_WS {
             tok = nfa(src, tok.f);
         }
 
-        Ok(tok)
+        *token = tok;
+
+        Ok(token)
 
         // otherwise return error
     } else {
@@ -39,21 +45,21 @@ mod tests {
     #[test]
     fn should_match_and_return_next_token() {
         let test_str = String::from("1d20");
-        let mut previous_token = Token::new();
-        previous_token.ttype = constants::TOKEN_NUM;
-        previous_token.f = 1;
-        let tok: Token = match_t(constants::TOKEN_NUM, previous_token, &test_str).unwrap();
-        assert_eq!(tok.ttype, constants::TOKEN_D);
+        let mut token = Token::new();
+        token.ttype = constants::TOKEN_NUM;
+        token.f = 1;
+        match_t(constants::TOKEN_NUM, &mut token, &test_str).unwrap();
+        assert_eq!(token.ttype, constants::TOKEN_D);
     }
 
     #[test]
     fn should_synerr() {
         let test_str = String::from("1d20");
-        let mut previous_token = Token::new();
-        previous_token.ttype = constants::TOKEN_NUM;
-        previous_token.f = 1;
+        let mut token = Token::new();
+        token.ttype = constants::TOKEN_NUM;
+        token.f = 1;
         assert_eq!(
-            match_t(constants::TOKEN_RELOP, previous_token, &test_str).err(),
+            match_t(constants::TOKEN_RELOP, &mut token, &test_str).err(),
             Some(constants::TOKEN_SYNERR)
         );
     }
