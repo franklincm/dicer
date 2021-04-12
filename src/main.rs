@@ -6,7 +6,8 @@ use lex::*;
 
 fn main() {
     //let test = String::from("1d20 + 5 * (2d12) <= 5 + MIN - MAX + min()");
-    let test = String::from("1 * 3");
+    let test = String::from("1d2 * 3");
+    println!("parse: \"{}\"\n", test);
     let mut token: Token = parse::start(&test);
 
     parse::rdp::parse_expression(&mut token, &test);

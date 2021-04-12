@@ -19,6 +19,24 @@ pub fn parse_expression(token: &mut Token, src: &String) {
         print_descent("expression", "term");
         parse_term(token, src);
         print_return("expression");
+
+        print_descent("expression", "expression_tail");
+        parse_expression_tail(token, src);
+        print_return("expression");
+    }
+}
+
+pub fn parse_expression_tail(token: &mut Token, src: &String) {
+    if token.ttype == constants::TOKEN_ADDOP {
+        parse::match_t(constants::TOKEN_ADDOP, token, src).unwrap();
+
+        print_descent("expression", "term");
+        parse_term(token, src);
+        print_return("expression");
+
+        print_descent("expression", "expression_tail");
+        parse_expression_tail(token, src);
+        print_return("expression");
     }
 }
 
@@ -28,7 +46,7 @@ pub fn parse_term(token: &mut Token, src: &String) {
         || token.ttype == constants::TOKEN_FMIN
         || token.ttype == constants::TOKEN_FMAX
     {
-        parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
+        parse_factor(token, src);
         print_descent("term", "term_tail");
         parse_term_tail(token, src);
         print_return("term");
@@ -38,13 +56,43 @@ pub fn parse_term(token: &mut Token, src: &String) {
 pub fn parse_term_tail(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_MULOP {
         parse::match_t(constants::TOKEN_MULOP, token, src).unwrap();
-        // parse_factor
+        print_descent("term_tail", "factor");
+        parse_factor(token, src);
+        print_return("term_tail");
+
+        print_descent("term_tail", "term_tail");
         parse_term_tail(token, src);
+        print_return("term_tail");
     } else if token.ttype == constants::TOKEN_ADDOP
         || token.ttype == constants::TOKEN_COMMA
         || token.ttype == constants::TOKEN_RPAREN
         || token.ttype == constants::TOKEN_EOF
     {
-        // epsilon
+    }
+}
+
+pub fn parse_factor(token: &mut Token, src: &String) {
+    if token.ttype == constants::TOKEN_NUM {
+        parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
+        print_descent("factor", "factor_tail");
+        parse_factor_tail(token, src);
+        print_return("factor");
+    }
+}
+
+pub fn parse_factor_tail(token: &mut Token, src: &String) {
+    if token.ttype == constants::TOKEN_D {
+        parse::match_t(constants::TOKEN_D, token, src).unwrap();
+        parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
+        print_descent("factor_tail", "factor_tail_tail");
+        parse_factor_tail_tail(token, src);
+        print_return("factor_tail");
+    }
+}
+
+pub fn parse_factor_tail_tail(token: &mut Token, src: &String) {
+    if token.ttype == constants::TOKEN_ADDOP {
+        parse::match_t(constants::TOKEN_ADDOP, token, src).unwrap();
+        parse::match_t(constants::TOKEN_EXTREMA, token, src).unwrap();
     }
 }
