@@ -162,7 +162,7 @@ pub fn parse_fcount(token: &mut Token, src: &String) {
 
     print_descent("fcount", "condition_list");
     parse_condition_list(token, src);
-    print_return("fctoun");
+    print_return("fcount");
 
     parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }
