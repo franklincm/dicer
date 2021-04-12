@@ -1,7 +1,8 @@
 pub mod rdp;
 
+use crate::lex::constants;
+use crate::lex::nfa;
 use crate::lex::Token;
-use crate::lex::*;
 use dicer::token_type_to_str;
 
 pub fn start(src: &String) -> Token {

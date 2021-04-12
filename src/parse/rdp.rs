@@ -1,5 +1,5 @@
+use crate::lex::constants;
 use crate::lex::Token;
-use crate::lex::*;
 use crate::parse;
 
 fn print_descent(caller: &str, callee: &str) {
