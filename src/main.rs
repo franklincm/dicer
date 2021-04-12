@@ -1,28 +1,30 @@
 mod lex;
 mod parse;
 
-use dicer::*;
+//use dicer::*;
 use lex::*;
-use parse::*;
 
 fn main() {
-    let test = String::from("1d20 + 5 * (2d12) <= 5 + MIN - MAX + min()");
-    let mut token: Token = start(&test);
+    //let test = String::from("1d20 + 5 * (2d12) <= 5 + MIN - MAX + min()");
+    let test = String::from("1 * 3");
+    let mut token: Token = parse::start(&test);
 
-    println!("{}", token_type_to_str(token.ttype));
+    parse::rdp::parse_expression(&mut token, &test);
 
-    match_t(token.ttype, &mut token, &test).unwrap();
-    println!("{}", token_type_to_str(token.ttype));
+    // println!("{}", token_type_to_str(token.ttype));
 
-    match_t(constants::TOKEN_D, &mut token, &test).unwrap();
-    println!("{}", token_type_to_str(token.ttype));
+    // parse::match_t(token.ttype, &mut token, &test).unwrap();
+    // println!("{}", token_type_to_str(token.ttype));
 
-    match_t(constants::TOKEN_NUM, &mut token, &test).unwrap();
-    println!("{}", token_type_to_str(token.ttype));
+    // parse::match_t(constants::TOKEN_D, &mut token, &test).unwrap();
+    // println!("{}", token_type_to_str(token.ttype));
 
-    match_t(constants::TOKEN_ADDOP, &mut token, &test).unwrap();
-    println!("{}", token_type_to_str(token.ttype));
+    // parse::match_t(constants::TOKEN_NUM, &mut token, &test).unwrap();
+    // println!("{}", token_type_to_str(token.ttype));
 
-    match_t(constants::TOKEN_NUM, &mut token, &test).unwrap();
-    println!("{}", token_type_to_str(token.ttype));
+    // parse::match_t(constants::TOKEN_ADDOP, &mut token, &test).unwrap();
+    // println!("{}", token_type_to_str(token.ttype));
+
+    // parse::match_t(constants::TOKEN_NUM, &mut token, &test).unwrap();
+    // println!("{}", token_type_to_str(token.ttype));
 }

@@ -1,3 +1,5 @@
+pub mod rdp;
+
 use crate::lex::Token;
 use crate::lex::*;
 use dicer::token_type_to_str;
@@ -16,6 +18,11 @@ pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a
         *token = tok;
         Ok(token)
     } else if token.ttype == ttype {
+        println!(
+            "match: {} == {}",
+            token_type_to_str(token.ttype),
+            token_type_to_str(ttype)
+        );
         tok = nfa(src, token.f);
 
         // if whitespace, skip
