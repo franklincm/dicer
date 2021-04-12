@@ -22,6 +22,7 @@ pub fn parse_expression(token: &mut Token, src: &String) {
     } else if token.ttype == constants::TOKEN_FCOUNT {
         parse_fcount(token, src);
     }
+    parse::match_t(constants::TOKEN_EOF, token, src).unwrap();
 }
 
 pub fn parse_simple_expression(token: &mut Token, src: &String) {
