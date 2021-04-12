@@ -20,6 +20,7 @@ pub fn parse_expression(token: &mut Token, src: &String) {
         parse_simple_expression(token, src);
         print_return("expression");
     } else if token.ttype == constants::TOKEN_FCOUNT {
+        parse_fcount(token, src);
     }
 }
 
@@ -94,6 +95,8 @@ pub fn parse_factor(token: &mut Token, src: &String) {
         print_descent("factor", "fmin");
         parse_fmax(token, src);
         print_return("factor");
+    } else {
+        panic!("SYNERR");
     }
 }
 
@@ -146,4 +149,48 @@ pub fn parse_fmax(token: &mut Token, src: &String) {
     print_return("fmax");
 
     parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
+}
+
+pub fn parse_fcount(token: &mut Token, src: &String) {
+    parse::match_t(constants::TOKEN_FCOUNT, token, src).unwrap();
+    parse::match_t(constants::TOKEN_LPAREN, token, src).unwrap();
+    parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
+    parse::match_t(constants::TOKEN_D, token, src).unwrap();
+    parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
+    parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
+
+    print_descent("fcount", "condition_list");
+    parse_condition_list(token, src);
+    print_return("fctoun");
+
+    parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
+}
+
+pub fn parse_condition_list(token: &mut Token, src: &String) {
+    print_descent("condition_list", "condition");
+    parse_condition(token, src);
+    print_return("condition_list");
+
+    print_descent("condition_list", "condition_list_tail");
+    parse_condition_list_tail(token, src);
+    print_return("condition_list");
+}
+
+pub fn parse_condition(token: &mut Token, src: &String) {
+    parse::match_t(constants::TOKEN_RELOP, token, src).unwrap();
+    parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
+}
+
+pub fn parse_condition_list_tail(token: &mut Token, src: &String) {
+    if token.ttype == constants::TOKEN_COMMA {
+        parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
+
+        print_descent("condition_list_tail", "condition");
+        parse_condition(token, src);
+        print_return("condition_list_tail");
+
+        print_descent("condition_list_tail", "condition");
+        parse_condition_list_tail(token, src);
+        print_return("condition_list_tail");
+    }
 }
