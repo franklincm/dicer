@@ -3,12 +3,14 @@ use crate::lex::Token;
 use crate::parse;
 
 use rand::{thread_rng, Rng};
+use std::cmp;
 
 pub fn parse_expression(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_NUM
         || token.ttype == constants::TOKEN_LPAREN
         || token.ttype == constants::TOKEN_FMIN
         || token.ttype == constants::TOKEN_FMAX
+        || token.ttype == constants::TOKEN_LBRACKET
     {
         parse_simple_expression(token, src);
     } else if token.ttype == constants::TOKEN_FCOUNT {
@@ -132,26 +134,28 @@ pub fn parse_factor_tail(token: &mut Token, src: &String) {
 pub fn parse_fmin(token: &mut Token, src: &String) {
     parse::match_t(constants::TOKEN_FMIN, token, src).unwrap();
     parse::match_t(constants::TOKEN_LPAREN, token, src).unwrap();
-
     parse_simple_expression(token, src);
+    let first = token.result.0;
 
     parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
-
     parse_simple_expression(token, src);
+    let second = token.result.0;
 
+    token.result.0 = cmp::min(first, second);
     parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }
 
 pub fn parse_fmax(token: &mut Token, src: &String) {
     parse::match_t(constants::TOKEN_FMAX, token, src).unwrap();
     parse::match_t(constants::TOKEN_LPAREN, token, src).unwrap();
-
     parse_simple_expression(token, src);
+    let first = token.result.0;
 
     parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
-
     parse_simple_expression(token, src);
+    let second = token.result.0;
 
+    token.result.0 = cmp::max(first, second);
     parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }
 
