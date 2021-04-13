@@ -15,3 +15,5 @@ pub const TOKEN_FMIN: i32 = 11;
 pub const TOKEN_FMAX: i32 = 12;
 pub const TOKEN_FCOUNT: i32 = 13;
 pub const TOKEN_SYNERR: i32 = 101;
+pub const TOKEN_RBRACKET: i32 = 102;
+pub const TOKEN_LBRACKET: i32 = 103;
