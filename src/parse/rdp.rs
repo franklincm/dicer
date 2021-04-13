@@ -57,7 +57,6 @@ pub fn parse_term_tail(token: &mut Token, src: &String) {
         parse::match_t(constants::TOKEN_MULOP, token, src).unwrap();
 
         parse_factor(token, src);
-
         if op == "*" {
             token.result.0 = result * token.result.0;
         } else if op == "/" {
@@ -140,7 +139,6 @@ pub fn parse_fmin(token: &mut Token, src: &String) {
     parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
     parse_simple_expression(token, src);
     let second = token.result.0;
-
     token.result.0 = cmp::min(first, second);
     parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }
@@ -154,7 +152,6 @@ pub fn parse_fmax(token: &mut Token, src: &String) {
     parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
     parse_simple_expression(token, src);
     let second = token.result.0;
-
     token.result.0 = cmp::max(first, second);
     parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }

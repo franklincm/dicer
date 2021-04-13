@@ -15,7 +15,6 @@ pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a
 
     // if EOF, return default token
     if token.ttype == ttype && ttype == constants::TOKEN_EOF {
-        println!("** end of parse **");
         println!("RESULT:::{}", token.result.0);
         tok = Token::new();
         *token = tok;
