@@ -5,14 +5,13 @@
 3. _simple_expression'_ → **addop** _term_ _simple_expression'_ | ε
 4. _term_ → _factor_ _term'_
 5. _term'_ → **mulop** _factor_ _term'_ | ε
-6. _factor_ → **num** _factor'_ | **(** _simple_expression_ **)** | _min_ | _max_
-7. _factor'_ → **d** **num** _factor''_ | ε
-8. _factor''_ → **addop** **extrema** | ε
-9. _min_ → **fmin** **(** _simple_expression_ **,** _simple_expression_ **)**
-10. _max_ → **fmax** **(** _simple_expression_ **,** _simple_expression_ **)**
-11. _condition_list_ → _condition_ _condition_list'_
-12. _condition_list'_ → **,** _condition_ _condition_list'_ | ε
-13. _condition_ → **relop** **num**
+6. _factor_ → **num** _factor'_ | **[** **num** **d** **num** **addop** **extrema** **]** |**(** _simple_expression_ **)** | _min_ | _max_
+7. _factor'_ → **d** **num** | ε
+8. _min_ → **fmin** **(** _simple_expression_ **,** _simple_expression_ **)**
+9. _max_ → **fmax** **(** _simple_expression_ **,** _simple_expression_ **)**
+10. _condition_list_ → _condition_ _condition_list'_
+11. _condition_list'_ → **,** _condition_ _condition_list'_ | ε
+12. _condition_ → **relop** **num**
 ---
 
 ### tokens

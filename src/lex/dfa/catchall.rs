@@ -31,6 +31,12 @@ pub fn machine(tok: &mut Token, src: &String) {
     } else if char == &')' {
         k += 1;
         tok.ttype = constants::TOKEN_RPAREN;
+    } else if char == &'[' {
+        k += 1;
+        tok.ttype = constants::TOKEN_LBRACKET;
+    } else if char == &']' {
+        k += 1;
+        tok.ttype = constants::TOKEN_RBRACKET;
     }
 
     if k > tok.f {

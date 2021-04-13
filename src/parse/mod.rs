@@ -1,7 +1,8 @@
 pub mod rdp;
 
+use crate::lex::constants;
+use crate::lex::nfa;
 use crate::lex::Token;
-use crate::lex::*;
 use dicer::token_type_to_str;
 
 pub fn start(src: &String) -> Token {
@@ -10,19 +11,23 @@ pub fn start(src: &String) -> Token {
 
 pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a Token, i32> {
     let mut tok: Token;
+    let result = token.result;
 
     // if EOF, return default token
     if token.ttype == ttype && ttype == constants::TOKEN_EOF {
-        println!("** end of parse **");
+        println!("RESULT:::{}", token.result.0);
         tok = Token::new();
         *token = tok;
+        token.result = result;
+
         Ok(token)
     } else if token.ttype == ttype {
-        println!(
-            "match: {} == {}",
-            token_type_to_str(token.ttype),
-            token_type_to_str(ttype)
-        );
+        // println!(
+        //     "match: {} == {}",
+        //     token_type_to_str(token.ttype),
+        //     token_type_to_str(ttype)
+        // );
+
         tok = nfa(src, token.f);
 
         // if whitespace, skip
@@ -31,6 +36,7 @@ pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a
         }
 
         *token = tok;
+        token.result = result;
 
         Ok(token)
 
