@@ -1,4 +1,5 @@
 use crate::lex::constants;
+use crate::lex::RollResult;
 use crate::lex::Token;
 use crate::parse;
 
@@ -28,16 +29,16 @@ pub fn parse_simple_expression(token: &mut Token, src: &String) {
 pub fn parse_simple_expression_tail(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_ADDOP {
         let op = token.lexeme.clone();
-        let result = token.result.0;
+        let result = token.carry;
         print!(" {} ", op);
         parse::match_t(constants::TOKEN_ADDOP, token, src).unwrap();
 
         parse_term(token, src);
 
         if op == "+" {
-            token.result.0 = result + token.result.0;
+            token.carry = result + token.carry;
         } else if op == "-" {
-            token.result.0 = result - token.result.0;
+            token.carry = result - token.carry;
         }
 
         parse_simple_expression_tail(token, src);
@@ -52,15 +53,15 @@ pub fn parse_term(token: &mut Token, src: &String) {
 pub fn parse_term_tail(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_MULOP {
         let op = token.lexeme.clone();
-        let result = token.result.0;
+        let result = token.carry;
 
         parse::match_t(constants::TOKEN_MULOP, token, src).unwrap();
 
         parse_factor(token, src);
         if op == "*" {
-            token.result.0 = result * token.result.0;
+            token.carry = result * token.carry;
         } else if op == "/" {
-            token.result.0 = result / token.result.0;
+            token.carry = result / token.carry;
         }
 
         parse_term_tail(token, src);
@@ -74,12 +75,11 @@ pub fn parse_term_tail(token: &mut Token, src: &String) {
 
 pub fn parse_factor(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_NUM {
-        token.result.0 = token.attr;
+        token.carry = token.attr;
 
         parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
 
         parse_factor_tail(token, src);
-        print!("{}", token.result.0);
     } else if token.ttype == constants::TOKEN_LBRACKET {
         parse::match_t(constants::TOKEN_LBRACKET, token, src).unwrap();
 
@@ -91,25 +91,35 @@ pub fn parse_factor(token: &mut Token, src: &String) {
         parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
 
         token.result = roll(num_dice, num_sides);
+        token.carry = token.result.sum;
+
         let op = token.lexeme.clone();
-        print!("[ {} {} ", token.result.0, op);
+        print!("[ (");
+        let mut rolls: Vec<String> = Vec::new();
+        for val in &token.result.values {
+            rolls.push(val.to_string());
+        }
+        let rolls_str = rolls.join(" + ");
+        print!("{}", rolls_str);
+
+        print!(") {}", op);
 
         parse::match_t(constants::TOKEN_ADDOP, token, src).unwrap();
         let extrema = token.lexeme.clone();
         parse::match_t(constants::TOKEN_EXTREMA, token, src).unwrap();
 
         if op == "+" && extrema == "MAX" {
-            print!("{} ]", token.result.1);
-            token.result.0 += token.result.1;
+            print!("{} ]", token.result.max);
+            token.carry += token.result.max;
         } else if op == "-" && extrema == "MAX" {
-            print!("{} ]", token.result.1);
-            token.result.0 -= token.result.1;
+            print!("{} ]", token.result.max);
+            token.carry -= token.result.max;
         } else if op == "+" && extrema == "MIN" {
-            print!("{} ]", token.result.2);
-            token.result.0 += token.result.2;
+            print!("{} ]", token.result.min);
+            token.carry += token.result.min;
         } else if op == "-" && extrema == "MIN" {
-            print!("{} ]", token.result.2);
-            token.result.0 -= token.result.2;
+            print!("{} ]", token.result.min);
+            token.carry -= token.result.min;
         }
 
         parse::match_t(constants::TOKEN_RBRACKET, token, src).unwrap();
@@ -130,9 +140,22 @@ pub fn parse_factor_tail(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_D {
         parse::match_t(constants::TOKEN_D, token, src).unwrap();
 
-        token.result = roll(token.result.0, token.attr);
+        token.result = roll(token.carry, token.attr);
+        token.carry = token.result.sum;
+
+        print!("(");
+        let mut rolls: Vec<String> = Vec::new();
+        for val in &token.result.values {
+            rolls.push(val.to_string());
+        }
+        let rolls_str = rolls.join(" + ");
+        print!("{}", rolls_str);
+
+        print!(")");
 
         parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
+    } else {
+        print!("{}", token.carry);
     }
 }
 
@@ -142,13 +165,13 @@ pub fn parse_fmin(token: &mut Token, src: &String) {
     print!("min(");
     parse_simple_expression(token, src);
     print!(", ");
-    let first = token.result.0;
+    let first = token.carry;
 
     parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
     parse_simple_expression(token, src);
-    let second = token.result.0;
+    let second = token.carry;
     print!(")");
-    token.result.0 = cmp::min(first, second);
+    token.carry = cmp::min(first, second);
     parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }
 
@@ -156,12 +179,12 @@ pub fn parse_fmax(token: &mut Token, src: &String) {
     parse::match_t(constants::TOKEN_FMAX, token, src).unwrap();
     parse::match_t(constants::TOKEN_LPAREN, token, src).unwrap();
     parse_simple_expression(token, src);
-    let first = token.result.0;
+    let first = token.carry;
 
     parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
     parse_simple_expression(token, src);
-    let second = token.result.0;
-    token.result.0 = cmp::max(first, second);
+    let second = token.carry;
+    token.carry = cmp::max(first, second);
     parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }
 
@@ -199,24 +222,30 @@ pub fn parse_condition_list_tail(token: &mut Token, src: &String) {
     }
 }
 
-pub fn roll(n: i32, m: i32) -> (i32, i32, i32) {
+pub fn roll(n: i32, m: i32) -> RollResult {
     let mut rng = thread_rng();
-    let mut sum = 0;
     let mut max = i32::MIN;
     let mut min = i32::MAX;
-    let mut intermediate;
+    let mut values: Vec<i32> = Vec::new();
+    let mut i;
 
     for _ in 1..(n + 1) {
-        intermediate = rng.gen_range(1..(m + 1));
-        if intermediate > max {
-            max = intermediate;
+        i = rng.gen_range(1..(m + 1));
+        if i > max {
+            max = i;
         }
 
-        if intermediate < min {
-            min = intermediate;
+        if i < min {
+            min = i;
         }
 
-        sum += intermediate;
+        values.push(i)
     }
-    (sum, max, min)
+
+    RollResult {
+        sum: values.iter().sum(),
+        min: min,
+        max: max,
+        values: values,
+    }
 }
