@@ -28,16 +28,16 @@ pub fn parse_simple_expression(token: &mut Token, src: &String) {
 pub fn parse_simple_expression_tail(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_ADDOP {
         let op = token.lexeme.clone();
-        let result = token.result.0;
+        let result = token.carry;
         print!(" {} ", op);
         parse::match_t(constants::TOKEN_ADDOP, token, src).unwrap();
 
         parse_term(token, src);
 
         if op == "+" {
-            token.result.0 = result + token.result.0;
+            token.carry = result + token.carry;
         } else if op == "-" {
-            token.result.0 = result - token.result.0;
+            token.carry = result - token.carry;
         }
 
         parse_simple_expression_tail(token, src);
@@ -52,15 +52,15 @@ pub fn parse_term(token: &mut Token, src: &String) {
 pub fn parse_term_tail(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_MULOP {
         let op = token.lexeme.clone();
-        let result = token.result.0;
+        let result = token.carry;
 
         parse::match_t(constants::TOKEN_MULOP, token, src).unwrap();
 
         parse_factor(token, src);
         if op == "*" {
-            token.result.0 = result * token.result.0;
+            token.carry = result * token.carry;
         } else if op == "/" {
-            token.result.0 = result / token.result.0;
+            token.carry = result / token.carry;
         }
 
         parse_term_tail(token, src);
@@ -74,12 +74,12 @@ pub fn parse_term_tail(token: &mut Token, src: &String) {
 
 pub fn parse_factor(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_NUM {
-        token.result.0 = token.attr;
+        token.carry = token.attr;
 
         parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
 
         parse_factor_tail(token, src);
-        print!("{}", token.result.0);
+        print!("{}", token.carry);
     } else if token.ttype == constants::TOKEN_LBRACKET {
         parse::match_t(constants::TOKEN_LBRACKET, token, src).unwrap();
 
@@ -91,8 +91,9 @@ pub fn parse_factor(token: &mut Token, src: &String) {
         parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
 
         token.result = roll(num_dice, num_sides);
+        token.carry = token.result.0;
         let op = token.lexeme.clone();
-        print!("[ {} {} ", token.result.0, op);
+        print!("[ {} {} ", token.carry, op);
 
         parse::match_t(constants::TOKEN_ADDOP, token, src).unwrap();
         let extrema = token.lexeme.clone();
@@ -100,16 +101,16 @@ pub fn parse_factor(token: &mut Token, src: &String) {
 
         if op == "+" && extrema == "MAX" {
             print!("{} ]", token.result.1);
-            token.result.0 += token.result.1;
+            token.carry += token.result.1;
         } else if op == "-" && extrema == "MAX" {
             print!("{} ]", token.result.1);
-            token.result.0 -= token.result.1;
+            token.carry -= token.result.1;
         } else if op == "+" && extrema == "MIN" {
             print!("{} ]", token.result.2);
-            token.result.0 += token.result.2;
+            token.carry += token.result.2;
         } else if op == "-" && extrema == "MIN" {
             print!("{} ]", token.result.2);
-            token.result.0 -= token.result.2;
+            token.carry -= token.result.2;
         }
 
         parse::match_t(constants::TOKEN_RBRACKET, token, src).unwrap();
@@ -130,7 +131,8 @@ pub fn parse_factor_tail(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_D {
         parse::match_t(constants::TOKEN_D, token, src).unwrap();
 
-        token.result = roll(token.result.0, token.attr);
+        token.result = roll(token.carry, token.attr);
+        token.carry = token.result.0;
 
         parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
     }
@@ -142,13 +144,13 @@ pub fn parse_fmin(token: &mut Token, src: &String) {
     print!("min(");
     parse_simple_expression(token, src);
     print!(", ");
-    let first = token.result.0;
+    let first = token.carry;
 
     parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
     parse_simple_expression(token, src);
-    let second = token.result.0;
+    let second = token.carry;
     print!(")");
-    token.result.0 = cmp::min(first, second);
+    token.carry = cmp::min(first, second);
     parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }
 
@@ -156,12 +158,12 @@ pub fn parse_fmax(token: &mut Token, src: &String) {
     parse::match_t(constants::TOKEN_FMAX, token, src).unwrap();
     parse::match_t(constants::TOKEN_LPAREN, token, src).unwrap();
     parse_simple_expression(token, src);
-    let first = token.result.0;
+    let first = token.carry;
 
     parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
     parse_simple_expression(token, src);
-    let second = token.result.0;
-    token.result.0 = cmp::max(first, second);
+    let second = token.carry;
+    token.carry = cmp::max(first, second);
     parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }
 

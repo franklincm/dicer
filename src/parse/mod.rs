@@ -12,13 +12,15 @@ pub fn start(src: &String) -> Token {
 pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a Token, i32> {
     let mut tok: Token;
     let result = token.result;
+    let carry = token.carry;
 
     // if EOF, return default token
     if token.ttype == ttype && ttype == constants::TOKEN_EOF {
-        println!("RESULT:::{}", token.result.0);
+        println!("RESULT:::{}", token.carry);
         tok = Token::new();
         *token = tok;
         token.result = result;
+        token.carry = carry;
 
         Ok(token)
     } else if token.ttype == ttype {
@@ -37,6 +39,7 @@ pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a
 
         *token = tok;
         token.result = result;
+        token.carry = carry;
 
         Ok(token)
 
