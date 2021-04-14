@@ -11,7 +11,10 @@ pub fn start(src: &String) -> Token {
 
 pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a Token, i32> {
     let mut tok: Token;
-    let result = token.result;
+    let result_sum = token.result.sum;
+    let result_min = token.result.min;
+    let result_max = token.result.max;
+
     let carry = token.carry;
 
     // if EOF, return default token
@@ -19,7 +22,9 @@ pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a
         println!("RESULT:::{}", token.carry);
         tok = Token::new();
         *token = tok;
-        token.result = result;
+        token.result.sum = result_sum;
+        token.result.min = result_min;
+        token.result.max = result_max;
         token.carry = carry;
 
         Ok(token)
@@ -38,7 +43,9 @@ pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a
         }
 
         *token = tok;
-        token.result = result;
+        token.result.sum = result_sum;
+        token.result.min = result_min;
+        token.result.max = result_max;
         token.carry = carry;
 
         Ok(token)
