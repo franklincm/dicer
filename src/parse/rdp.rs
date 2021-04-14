@@ -80,7 +80,6 @@ pub fn parse_factor(token: &mut Token, src: &String) {
         parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
 
         parse_factor_tail(token, src);
-        print!("{}", token.carry);
     } else if token.ttype == constants::TOKEN_LBRACKET {
         parse::match_t(constants::TOKEN_LBRACKET, token, src).unwrap();
 
@@ -95,7 +94,15 @@ pub fn parse_factor(token: &mut Token, src: &String) {
         token.carry = token.result.sum;
 
         let op = token.lexeme.clone();
-        print!("[ {} {} ", token.carry, op);
+        print!("[ (");
+        let mut rolls: Vec<String> = Vec::new();
+        for val in &token.result.values {
+            rolls.push(val.to_string());
+        }
+        let rolls_str = rolls.join(" + ");
+        print!("{}", rolls_str);
+
+        print!(") {}", op);
 
         parse::match_t(constants::TOKEN_ADDOP, token, src).unwrap();
         let extrema = token.lexeme.clone();
@@ -136,7 +143,19 @@ pub fn parse_factor_tail(token: &mut Token, src: &String) {
         token.result = roll(token.carry, token.attr);
         token.carry = token.result.sum;
 
+        print!("(");
+        let mut rolls: Vec<String> = Vec::new();
+        for val in &token.result.values {
+            rolls.push(val.to_string());
+        }
+        let rolls_str = rolls.join(" + ");
+        print!("{}", rolls_str);
+
+        print!(")");
+
         parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
+    } else {
+        print!("{}", token.carry);
     }
 }
 
