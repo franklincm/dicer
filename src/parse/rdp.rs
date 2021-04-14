@@ -16,12 +16,12 @@ pub fn parse_expression(token: &mut Token, src: &String) {
     } else if token.ttype == constants::TOKEN_FCOUNT {
         parse_fcount(token, src);
     }
+    print!("\n");
     parse::match_t(constants::TOKEN_EOF, token, src).unwrap();
 }
 
 pub fn parse_simple_expression(token: &mut Token, src: &String) {
     parse_term(token, src);
-
     parse_simple_expression_tail(token, src);
 }
 
@@ -29,7 +29,7 @@ pub fn parse_simple_expression_tail(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_ADDOP {
         let op = token.lexeme.clone();
         let result = token.result.0;
-
+        print!(" {} ", op);
         parse::match_t(constants::TOKEN_ADDOP, token, src).unwrap();
 
         parse_term(token, src);
@@ -75,9 +75,11 @@ pub fn parse_term_tail(token: &mut Token, src: &String) {
 pub fn parse_factor(token: &mut Token, src: &String) {
     if token.ttype == constants::TOKEN_NUM {
         token.result.0 = token.attr;
+
         parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
 
         parse_factor_tail(token, src);
+        print!("{}", token.result.0);
     } else if token.ttype == constants::TOKEN_LBRACKET {
         parse::match_t(constants::TOKEN_LBRACKET, token, src).unwrap();
 
@@ -89,20 +91,24 @@ pub fn parse_factor(token: &mut Token, src: &String) {
         parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
 
         token.result = roll(num_dice, num_sides);
-
         let op = token.lexeme.clone();
+        print!("[ {} {} ", token.result.0, op);
 
         parse::match_t(constants::TOKEN_ADDOP, token, src).unwrap();
         let extrema = token.lexeme.clone();
         parse::match_t(constants::TOKEN_EXTREMA, token, src).unwrap();
 
         if op == "+" && extrema == "MAX" {
+            print!("{} ]", token.result.1);
             token.result.0 += token.result.1;
         } else if op == "-" && extrema == "MAX" {
+            print!("{} ]", token.result.1);
             token.result.0 -= token.result.1;
         } else if op == "+" && extrema == "MIN" {
+            print!("{} ]", token.result.2);
             token.result.0 += token.result.2;
         } else if op == "-" && extrema == "MIN" {
+            print!("{} ]", token.result.2);
             token.result.0 -= token.result.2;
         }
 
@@ -133,12 +139,15 @@ pub fn parse_factor_tail(token: &mut Token, src: &String) {
 pub fn parse_fmin(token: &mut Token, src: &String) {
     parse::match_t(constants::TOKEN_FMIN, token, src).unwrap();
     parse::match_t(constants::TOKEN_LPAREN, token, src).unwrap();
+    print!("min(");
     parse_simple_expression(token, src);
+    print!(", ");
     let first = token.result.0;
 
     parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
     parse_simple_expression(token, src);
     let second = token.result.0;
+    print!(")");
     token.result.0 = cmp::min(first, second);
     parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }
