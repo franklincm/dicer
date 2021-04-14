@@ -2,10 +2,19 @@ pub mod constants;
 pub mod dfa;
 
 #[derive(Debug)]
+pub struct RollResult {
+    pub sum: i32,
+    pub min: i32,
+    pub max: i32,
+    pub values: Vec<i32>,
+}
+
+#[derive(Debug)]
 pub struct Token {
     pub ttype: i32,
     pub lexeme: String,
     pub attr: i32,
+    pub carry: i32,
     pub result: (i32, i32, i32),
     pub f: i32,
 }
@@ -16,6 +25,7 @@ impl Token {
             ttype: constants::TOKEN_UNRECSYM,
             lexeme: String::from(""),
             attr: 0,
+            carry: 0,
             result: (0, 0, 0),
             f: 0,
         }
