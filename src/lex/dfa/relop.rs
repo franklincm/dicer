@@ -25,6 +25,9 @@ pub fn machine(tok: &mut Token, src: &String) {
                 _ => (),
             };
         }
+        Some('=') => {
+            k += 1;
+        }
         _ => return,
     }
 
