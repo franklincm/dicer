@@ -178,12 +178,15 @@ pub fn parse_fmin(token: &mut Token, src: &String) {
 pub fn parse_fmax(token: &mut Token, src: &String) {
     parse::match_t(constants::TOKEN_FMAX, token, src).unwrap();
     parse::match_t(constants::TOKEN_LPAREN, token, src).unwrap();
+    print!("max(");
     parse_simple_expression(token, src);
+    print!(", ");
     let first = token.carry;
 
     parse::match_t(constants::TOKEN_COMMA, token, src).unwrap();
     parse_simple_expression(token, src);
     let second = token.carry;
+    print!(")");
     token.carry = cmp::max(first, second);
     parse::match_t(constants::TOKEN_RPAREN, token, src).unwrap();
 }
