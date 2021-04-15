@@ -1,7 +1,4 @@
-mod lex;
-mod parse;
-
-use lex::*;
+use dicer::eval;
 
 fn main() {
     // simple expression
@@ -11,12 +8,5 @@ fn main() {
     //let test = String::from("min(max(1d4, 3), min(2d4, 1d8))");
     let test = String::from("count(5d6, >4, <3, =2)");
     println!("parse: \"{}\"\n", test);
-    let mut token: Token = parse::start(&test);
-    parse::rdp::parse_expression(&mut token, &test);
-
-    // fcount
-    // let test = String::from("count(5d6, >1, <=5)");
-    // println!("\nparse: \"{}\"\n", test);
-    // let mut token: Token = parse::start(&test);
-    // parse::rdp::parse_expression(&mut token, &test);
+    eval(&test);
 }

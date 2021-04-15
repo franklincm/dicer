@@ -1,4 +1,10 @@
 pub mod lex;
+pub mod parse;
+
+use crate::lex::nfa;
+use crate::lex::Token;
+use crate::parse::rdp::parse_expression;
+
 pub fn token_type_to_str(ttype: i32) -> String {
     match ttype {
         99 => String::from("TOKEN_LEXERR"),
@@ -21,4 +27,13 @@ pub fn token_type_to_str(ttype: i32) -> String {
         103 => String::from("TOKEN_LBRACKET"),
         _ => String::from("TOKEN_UNRECSYM"),
     }
+}
+
+pub fn eval(src: &String) {
+    let mut token: Token = nfa(src, 0);
+    let mut output = String::from("");
+    parse_expression(&mut token, src, &mut output);
+    println!("finished. token.ttype = {}", token_type_to_str(token.ttype));
+    println!("result:::{}", token.carry);
+    println!("{}", output);
 }
