@@ -5,8 +5,9 @@ use crate::lex::nfa;
 use crate::lex::Token;
 use dicer::token_type_to_str;
 
-pub fn start(src: &String) -> Token {
-    nfa(src, 0)
+pub fn start(src: &String) {
+    let mut token: Token = nfa(src, 0);
+    rdp::parse_expression(&mut token, src);
 }
 
 pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a Token, i32> {
