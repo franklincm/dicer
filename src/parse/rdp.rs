@@ -6,34 +6,34 @@ use crate::parse;
 use rand::{thread_rng, Rng};
 use std::cmp;
 
-pub fn parse_expression(token: &mut Token, src: &String) {
+pub fn parse_expression(token: &mut Token, src: &String, output: &mut String) {
     if token.ttype == constants::TOKEN_NUM
         || token.ttype == constants::TOKEN_LPAREN
         || token.ttype == constants::TOKEN_FMIN
         || token.ttype == constants::TOKEN_FMAX
         || token.ttype == constants::TOKEN_LBRACKET
     {
-        parse_simple_expression(token, src);
+        parse_simple_expression(token, src, output);
     } else if token.ttype == constants::TOKEN_FCOUNT {
-        parse_fcount(token, src);
+        parse_fcount(token, src, output);
     }
-    print!("\n");
+    output.push_str("\n");
     parse::match_t(constants::TOKEN_EOF, token, src);
 }
 
-pub fn parse_simple_expression(token: &mut Token, src: &String) {
-    parse_term(token, src);
-    parse_simple_expression_tail(token, src);
+pub fn parse_simple_expression(token: &mut Token, src: &String, output: &mut String) {
+    parse_term(token, src, output);
+    parse_simple_expression_tail(token, src, output);
 }
 
-pub fn parse_simple_expression_tail(token: &mut Token, src: &String) {
+pub fn parse_simple_expression_tail(token: &mut Token, src: &String, output: &mut String) {
     if token.ttype == constants::TOKEN_ADDOP {
         let op = token.lexeme.clone();
         let result = token.carry;
-        print!(" {} ", op);
+        output.push_str(format!(" {} ", op).as_str());
         parse::match_t(constants::TOKEN_ADDOP, token, src);
 
-        parse_term(token, src);
+        parse_term(token, src, output);
 
         if op == "+" {
             token.carry = result + token.carry;
@@ -41,30 +41,29 @@ pub fn parse_simple_expression_tail(token: &mut Token, src: &String) {
             token.carry = result - token.carry;
         }
 
-        parse_simple_expression_tail(token, src);
+        parse_simple_expression_tail(token, src, output);
     }
 }
 
-pub fn parse_term(token: &mut Token, src: &String) {
-    parse_factor(token, src);
-    parse_term_tail(token, src);
+pub fn parse_term(token: &mut Token, src: &String, output: &mut String) {
+    parse_factor(token, src, output);
+    parse_term_tail(token, src, output);
 }
 
-pub fn parse_term_tail(token: &mut Token, src: &String) {
+pub fn parse_term_tail(token: &mut Token, src: &String, output: &mut String) {
     if token.ttype == constants::TOKEN_MULOP {
         let op = token.lexeme.clone();
         let result = token.carry;
-
         parse::match_t(constants::TOKEN_MULOP, token, src);
+        parse_factor(token, src, output);
 
-        parse_factor(token, src);
         if op == "*" {
             token.carry = result * token.carry;
         } else if op == "/" {
             token.carry = result / token.carry;
         }
 
-        parse_term_tail(token, src);
+        parse_term_tail(token, src, output);
     } else if token.ttype == constants::TOKEN_ADDOP
         || token.ttype == constants::TOKEN_COMMA
         || token.ttype == constants::TOKEN_RPAREN
@@ -73,187 +72,169 @@ pub fn parse_term_tail(token: &mut Token, src: &String) {
     }
 }
 
-pub fn parse_factor(token: &mut Token, src: &String) {
+pub fn parse_factor(token: &mut Token, src: &String, output: &mut String) {
     if token.ttype == constants::TOKEN_NUM {
         token.carry = token.attr;
-
         parse::match_t(constants::TOKEN_NUM, token, src);
-
-        parse_factor_tail(token, src);
+        parse_factor_tail(token, src, output);
     } else if token.ttype == constants::TOKEN_LBRACKET {
         parse::match_t(constants::TOKEN_LBRACKET, token, src);
-
         let num_dice = token.attr;
         parse::match_t(constants::TOKEN_NUM, token, src);
         parse::match_t(constants::TOKEN_D, token, src);
-
         let num_sides = token.attr;
         parse::match_t(constants::TOKEN_NUM, token, src);
-
         token.result = roll(num_dice, num_sides);
         token.carry = token.result.sum;
-
         let op = token.lexeme.clone();
-        print!("[ (");
+        output.push_str("[ (");
         let mut rolls: Vec<String> = Vec::new();
+
         for val in &token.result.values {
             rolls.push(val.to_string());
         }
+
         let rolls_str = rolls.join(" + ");
-        print!("{}", rolls_str);
-
-        print!(") {}", op);
-
+        output.push_str(format!("{}", rolls_str).as_str());
+        output.push_str(format!(") {}", op).as_str());
         parse::match_t(constants::TOKEN_ADDOP, token, src);
         let extrema = token.lexeme.clone();
         parse::match_t(constants::TOKEN_EXTREMA, token, src);
 
         if op == "+" && extrema == "MAX" {
-            print!("{} ]", token.result.max);
+            output.push_str(format!("{} ]", token.result.max).as_str());
             token.carry += token.result.max;
         } else if op == "-" && extrema == "MAX" {
-            print!("{} ]", token.result.max);
+            output.push_str(format!("{} ]", token.result.max).as_str());
             token.carry -= token.result.max;
         } else if op == "+" && extrema == "MIN" {
-            print!("{} ]", token.result.min);
+            output.push_str(format!("{} ]", token.result.max).as_str());
             token.carry += token.result.min;
         } else if op == "-" && extrema == "MIN" {
-            print!("{} ]", token.result.min);
+            output.push_str(format!("{} ]", token.result.max).as_str());
             token.carry -= token.result.min;
         }
 
         parse::match_t(constants::TOKEN_RBRACKET, token, src);
     } else if token.ttype == constants::TOKEN_LPAREN {
         parse::match_t(constants::TOKEN_LPAREN, token, src);
-        parse_simple_expression(token, src);
+        parse_simple_expression(token, src, output);
         parse::match_t(constants::TOKEN_RPAREN, token, src);
     } else if token.ttype == constants::TOKEN_FMIN {
-        parse_fmin(token, src);
+        parse_fmin(token, src, output);
     } else if token.ttype == constants::TOKEN_FMAX {
-        parse_fmax(token, src);
+        parse_fmax(token, src, output);
     } else {
         token.ttype = constants::TOKEN_SYNERR;
     }
 }
 
-pub fn parse_factor_tail(token: &mut Token, src: &String) {
+pub fn parse_factor_tail(token: &mut Token, src: &String, output: &mut String) {
     if token.ttype == constants::TOKEN_D {
         parse::match_t(constants::TOKEN_D, token, src);
-
         token.result = roll(token.carry, token.attr);
         token.carry = token.result.sum;
-
-        print!("(");
+        output.push_str("(");
         let mut rolls: Vec<String> = Vec::new();
+
         for val in &token.result.values {
             rolls.push(val.to_string());
         }
+
         let rolls_str = rolls.join(" + ");
-        print!("{}", rolls_str);
-
-        print!(")");
-
+        output.push_str(format!("{}", rolls_str).as_str());
+        output.push_str(")");
         parse::match_t(constants::TOKEN_NUM, token, src);
     } else {
-        print!("{}", token.carry);
+        output.push_str(format!("{}", token.carry).as_str());
     }
 }
 
-pub fn parse_fmin(token: &mut Token, src: &String) {
+pub fn parse_fmin(token: &mut Token, src: &String, output: &mut String) {
     parse::match_t(constants::TOKEN_FMIN, token, src);
     parse::match_t(constants::TOKEN_LPAREN, token, src);
-    print!("min(");
-    parse_simple_expression(token, src);
-    print!(", ");
+    output.push_str("min(");
+    parse_simple_expression(token, src, output);
+    output.push_str(", ");
     let first = token.carry;
-
     parse::match_t(constants::TOKEN_COMMA, token, src);
-    parse_simple_expression(token, src);
+    parse_simple_expression(token, src, output);
     let second = token.carry;
-    print!(")");
+    output.push_str(")");
     token.carry = cmp::min(first, second);
     parse::match_t(constants::TOKEN_RPAREN, token, src);
 }
 
-pub fn parse_fmax(token: &mut Token, src: &String) {
+pub fn parse_fmax(token: &mut Token, src: &String, output: &mut String) {
     parse::match_t(constants::TOKEN_FMAX, token, src);
     parse::match_t(constants::TOKEN_LPAREN, token, src);
-    print!("max(");
-    parse_simple_expression(token, src);
-    print!(", ");
+    output.push_str("max(");
+    parse_simple_expression(token, src, output);
+    output.push_str(", ");
     let first = token.carry;
-
     parse::match_t(constants::TOKEN_COMMA, token, src);
-    parse_simple_expression(token, src);
+    parse_simple_expression(token, src, output);
     let second = token.carry;
-    print!(")");
+    output.push_str(")");
     token.carry = cmp::max(first, second);
     parse::match_t(constants::TOKEN_RPAREN, token, src);
 }
 
-pub fn parse_fcount(token: &mut Token, src: &String) {
+pub fn parse_fcount(token: &mut Token, src: &String, output: &mut String) {
     parse::match_t(constants::TOKEN_FCOUNT, token, src);
     parse::match_t(constants::TOKEN_LPAREN, token, src);
-
     let first = token.attr;
     parse::match_t(constants::TOKEN_NUM, token, src);
     parse::match_t(constants::TOKEN_D, token, src);
-
     let second = token.attr;
     parse::match_t(constants::TOKEN_NUM, token, src);
-
-    print!("count({}d{}, ", first, second);
-
+    output.push_str(format!("count({}d{}, ", first, second).as_str());
     token.result = roll(first, second);
     token.carry = token.result.sum;
-
     parse::match_t(constants::TOKEN_COMMA, token, src);
-
-    parse_condition_list(token, src);
-
+    parse_condition_list(token, src, output);
     parse::match_t(constants::TOKEN_RPAREN, token, src);
 }
 
-pub fn parse_condition_list(token: &mut Token, src: &String) {
-    parse_condition(token, src);
-    parse_condition_list_tail(token, src);
-    print!(")");
+pub fn parse_condition_list(token: &mut Token, src: &String, output: &mut String) {
+    parse_condition(token, src, output);
+    parse_condition_list_tail(token, src, output);
+    output.push_str(")");
 }
 
-pub fn parse_condition(token: &mut Token, src: &String) {
+pub fn parse_condition(token: &mut Token, src: &String, output: &mut String) {
     let relop = token.lexeme.clone();
     parse::match_t(constants::TOKEN_RELOP, token, src);
     let val = token.attr;
-    print!("{}{}: ", relop, val);
+    output.push_str(format!("{}{}: ", relop, val).as_str());
     let num;
+
     if relop == ">" {
         num = token.result.values.iter().filter(|&n| *n > val).count();
-        print!("{}", num);
+        output.push_str(format!("{}", num).as_str());
     } else if relop == "<" {
         num = token.result.values.iter().filter(|&n| *n < val).count();
-        print!("{}", num);
+        output.push_str(format!("{}", num).as_str());
     } else if relop == ">=" {
         num = token.result.values.iter().filter(|&n| *n >= val).count();
-        print!("{}", num);
+        output.push_str(format!("{}", num).as_str());
     } else if relop == "<=" {
         num = token.result.values.iter().filter(|&n| *n <= val).count();
-        print!("{}", num);
+        output.push_str(format!("{}", num).as_str());
     } else if relop == "=" {
         num = token.result.values.iter().filter(|&n| *n == val).count();
-        print!("{}", num);
+        output.push_str(format!("{}", num).as_str());
     }
 
     parse::match_t(constants::TOKEN_NUM, token, src);
 }
 
-pub fn parse_condition_list_tail(token: &mut Token, src: &String) {
+pub fn parse_condition_list_tail(token: &mut Token, src: &String, output: &mut String) {
     if token.ttype == constants::TOKEN_COMMA {
-        print!(", ");
+        output.push_str(", ");
         parse::match_t(constants::TOKEN_COMMA, token, src);
-
-        parse_condition(token, src);
-
-        parse_condition_list_tail(token, src);
+        parse_condition(token, src, output);
+        parse_condition_list_tail(token, src, output);
     }
 }
 

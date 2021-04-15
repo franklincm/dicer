@@ -7,9 +7,11 @@ use dicer::token_type_to_str;
 
 pub fn start(src: &String) {
     let mut token: Token = nfa(src, 0);
-    rdp::parse_expression(&mut token, src);
+    let mut output = String::from("");
+    rdp::parse_expression(&mut token, src, &mut output);
     println!("finished. token.ttype = {}", token_type_to_str(token.ttype));
     println!("result:::{}", token.carry);
+    println!("{}", output);
 }
 
 pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) {
