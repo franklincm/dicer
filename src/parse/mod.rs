@@ -14,6 +14,10 @@ pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a
     let result_sum = token.result.sum;
     let result_min = token.result.min;
     let result_max = token.result.max;
+    let mut result_values: Vec<i32> = Vec::new();
+    for val in &token.result.values {
+        result_values.push(*val);
+    }
 
     let carry = token.carry;
 
@@ -26,6 +30,9 @@ pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a
         token.result.min = result_min;
         token.result.max = result_max;
         token.carry = carry;
+        for val in result_values {
+            token.result.values.push(val);
+        }
 
         Ok(token)
     } else if token.ttype == ttype {
@@ -47,6 +54,9 @@ pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a
         token.result.min = result_min;
         token.result.max = result_max;
         token.carry = carry;
+        for val in result_values {
+            token.result.values.push(val);
+        }
 
         Ok(token)
 
