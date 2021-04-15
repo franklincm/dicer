@@ -8,9 +8,11 @@ use dicer::token_type_to_str;
 pub fn start(src: &String) {
     let mut token: Token = nfa(src, 0);
     rdp::parse_expression(&mut token, src);
+    println!("finished. token.ttype = {}", token_type_to_str(token.ttype));
+    println!("result:::{}", token.carry);
 }
 
-pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a Token, i32> {
+pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) {
     let mut tok: Token;
     let result_sum = token.result.sum;
     let result_min = token.result.min;
@@ -24,18 +26,7 @@ pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a
 
     // if EOF, return default token
     if token.ttype == ttype && ttype == constants::TOKEN_EOF {
-        println!("RESULT:::{}", token.carry);
-        tok = Token::new();
-        *token = tok;
-        token.result.sum = result_sum;
-        token.result.min = result_min;
-        token.result.max = result_max;
-        token.carry = carry;
-        for val in result_values {
-            token.result.values.push(val);
-        }
-
-        Ok(token)
+        // nop
     } else if token.ttype == ttype {
         tok = nfa(src, token.f);
 
@@ -53,16 +44,9 @@ pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) -> Result<&'a
             token.result.values.push(val);
         }
 
-        Ok(token)
-
         // otherwise return error
     } else {
-        eprintln!(
-            "**SYNERR** Expecting {}, Received: {}",
-            token_type_to_str(ttype),
-            token_type_to_str(token.ttype)
-        );
-        Err(constants::TOKEN_SYNERR)
+        token.ttype = constants::TOKEN_SYNERR;
     }
 }
 
@@ -76,7 +60,7 @@ mod tests {
         let mut token = Token::new();
         token.ttype = constants::TOKEN_NUM;
         token.f = 1;
-        match_t(constants::TOKEN_NUM, &mut token, &test_str).unwrap();
+        match_t(constants::TOKEN_NUM, &mut token, &test_str);
         assert_eq!(token.ttype, constants::TOKEN_D);
     }
 
@@ -86,9 +70,7 @@ mod tests {
         let mut token = Token::new();
         token.ttype = constants::TOKEN_NUM;
         token.f = 1;
-        assert_eq!(
-            match_t(constants::TOKEN_RELOP, &mut token, &test_str).err(),
-            Some(constants::TOKEN_SYNERR)
-        );
+        match_t(constants::TOKEN_RELOP, &mut token, &test_str);
+        assert_eq!(token.ttype, constants::TOKEN_SYNERR);
     }
 }
