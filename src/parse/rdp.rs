@@ -202,7 +202,7 @@ pub fn parse_fcount(token: &mut Token, src: &String) {
     let second = token.attr;
     parse::match_t(constants::TOKEN_NUM, token, src).unwrap();
 
-    print!("coun({}d{}, ", first, second);
+    print!("count({}d{}, ", first, second);
 
     token.result = roll(first, second);
     token.carry = token.result.sum;
@@ -224,7 +224,7 @@ pub fn parse_condition(token: &mut Token, src: &String) {
     let relop = token.lexeme.clone();
     parse::match_t(constants::TOKEN_RELOP, token, src).unwrap();
     let val = token.attr;
-
+    print!("{}{}: ", relop, val);
     let num;
     if relop == ">" {
         num = token.result.values.iter().filter(|&n| *n > val).count();
