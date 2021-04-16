@@ -108,10 +108,10 @@ fn parse_factor(token: &mut Token, src: &String, output: &mut String) {
             output.push_str(format!("{} ]", token.result.max).as_str());
             token.carry -= token.result.max;
         } else if op == "+" && extrema == "MIN" {
-            output.push_str(format!("{} ]", token.result.max).as_str());
+            output.push_str(format!("{} ]", token.result.min).as_str());
             token.carry += token.result.min;
         } else if op == "-" && extrema == "MIN" {
-            output.push_str(format!("{} ]", token.result.max).as_str());
+            output.push_str(format!("{} ]", token.result.min).as_str());
             token.carry -= token.result.min;
         }
 
