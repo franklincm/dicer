@@ -39,6 +39,11 @@ impl fmt::Debug for EvalError {
 /// ```
 pub fn eval(src: &String) -> Result<EvalResult, EvalError> {
     let mut token: Token = nfa(src, 0);
+
+    while token.ttype == constants::TOKEN_WS {
+        token = nfa(src, token.f);
+    }
+
     let mut output = String::from("");
     parse_expression(&mut token, src, &mut output);
 
