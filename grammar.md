@@ -40,13 +40,15 @@
 ### example valid strings
 
 ```
+1d20 + 4 + min([2d4-MAX], 3)
+
 max(10, 1d20 + 4) # evaluate 2 simple_expressions, return max value
 min(2d20, 15)
 
 max(10, max(1d10, 1d20))
 
-4d6 - MIN # roll 4 six-sided dice, subtract the lowest value
-4d6 - MAX # roll 4 six-sided dice, subtract the highest value
+[4d6 - MIN] # roll 4 six-sided dice, subtract the lowest value
+[4d6 - MAX] # roll 4 six-sided dice, subtract the highest value
 
 count(4d6, >4)
 count(10d6, >=5, =1, =6, <=4)
