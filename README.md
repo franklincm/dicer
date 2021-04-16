@@ -18,3 +18,11 @@ fn main() {
     println!("{}", result.str);
 }
 ```
+
+output:
+```
+parse: "1d20 * (3+2) + min([2d4 - MAX], 3)"
+
+51
+(10)3 + 2 + min([ (1 + 4) -4 ], 3)
+```
