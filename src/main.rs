@@ -2,7 +2,6 @@ use dicer::eval;
 
 fn main() {
     // simple expression
-    let test = String::from("count(5d6, >4, <3, =2)");
     let test = String::from("1d20 + 4 + min([2d4-MAX], 3)");
     println!("parse: \"{}\"\n", test);
 
