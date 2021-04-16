@@ -17,7 +17,6 @@ pub fn parse_expression(token: &mut Token, src: &String, output: &mut String) {
     } else if token.ttype == constants::TOKEN_FCOUNT {
         parse_fcount(token, src, output);
     }
-    output.push_str("\n");
     parse::match_t(constants::TOKEN_EOF, token, src);
 }
 
