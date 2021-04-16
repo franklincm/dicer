@@ -1,10 +1,13 @@
 [package]
 name = "dicer"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["gnullbyte <gnullbyte@gmail.com>"]
 edition = "2018"
 description = "Dice Roller"
 license = "MIT OR Apache-2.0"
+repository = "https://github.com/gnullByte/dicer"
+homepage = "https://github.com/gnullByte/dicer"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
