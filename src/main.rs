@@ -2,11 +2,11 @@ use dicer::eval;
 
 fn main() {
     // simple expression
-    //let test = String::from("1d2 * (3+2) + min(2, 3)");
-    //let test = String::from("2d20 - [ 2d4+MAX ]");
-    //let test = String::from("[4d6-MIN] + min(4,2d4)");
-    //let test = String::from("min(max(1d4, 3), min(2d4, 1d8))");
     let test = String::from("count(5d6, >4, <3, =2)");
+    let test = String::from("1d20 + 4 + min([2d4-MAX], 3)");
     println!("parse: \"{}\"\n", test);
-    eval(&test);
+
+    let result = eval(&test).expect("uh oh");
+    println!("{}", result.value);
+    println!("{}", result.str);
 }
