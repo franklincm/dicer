@@ -26,6 +26,17 @@ impl fmt::Debug for EvalError {
     }
 }
 
+/// Simulates rolling dice for the given string
+///
+/// # Example
+///
+/// ```
+/// use dicer::eval;
+/// let expr = String::from("1d20 + 4");
+/// let result = eval(&expr).unwrap();
+/// println!("value: {}", result.value);
+/// println!("intermediate rolls: {}", result.str);
+/// ```
 pub fn eval(src: &String) -> Result<EvalResult, EvalError> {
     let mut token: Token = nfa(src, 0);
     let mut output = String::from("");
@@ -37,29 +48,5 @@ pub fn eval(src: &String) -> Result<EvalResult, EvalError> {
             str: output,
         }),
         _ => Err(EvalError),
-    }
-}
-
-pub fn token_type_to_str(ttype: i32) -> String {
-    match ttype {
-        99 => String::from("TOKEN_LEXERR"),
-        0 => String::from("TOKEN_WS"),
-        1 => String::from("TOKEN_ADDOP"),
-        2 => String::from("TOKEN_MULOP"),
-        3 => String::from("TOKEN_COMMA"),
-        4 => String::from("TOKEN_LPAREN"),
-        5 => String::from("TOKEN_RPAREN"),
-        6 => String::from("TOKEN_EOF"),
-        7 => String::from("TOKEN_D"),
-        8 => String::from("TOKEN_NUM"),
-        9 => String::from("TOKEN_RELOP"),
-        10 => String::from("TOKEN_EXTREMA"),
-        11 => String::from("TOKEN_FMIN"),
-        12 => String::from("TOKEN_FMAX"),
-        13 => String::from("TOKEN_FCOUNT"),
-        101 => String::from("TOKEN_SYNERR"),
-        102 => String::from("TOKEN_RBRACKET"),
-        103 => String::from("TOKEN_LBRACKET"),
-        _ => String::from("TOKEN_UNRECSYM"),
     }
 }
