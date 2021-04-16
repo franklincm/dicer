@@ -54,6 +54,7 @@ fn parse_term_tail(token: &mut Token, src: &String, output: &mut String) {
     if token.ttype == constants::TOKEN_MULOP {
         let op = token.lexeme.clone();
         let result = token.carry;
+        output.push_str(format!(" {} ", op).as_str());
         parse::match_t(constants::TOKEN_MULOP, token, src);
         parse_factor(token, src, output);
 
@@ -117,8 +118,10 @@ fn parse_factor(token: &mut Token, src: &String, output: &mut String) {
 
         parse::match_t(constants::TOKEN_RBRACKET, token, src);
     } else if token.ttype == constants::TOKEN_LPAREN {
+        output.push_str("(");
         parse::match_t(constants::TOKEN_LPAREN, token, src);
         parse_simple_expression(token, src, output);
+        output.push_str(")");
         parse::match_t(constants::TOKEN_RPAREN, token, src);
     } else if token.ttype == constants::TOKEN_FMIN {
         parse_fmin(token, src, output);
