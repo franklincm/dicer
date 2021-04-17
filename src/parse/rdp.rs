@@ -14,10 +14,19 @@ pub fn parse_expression(token: &mut Token, src: &String, output: &mut String) {
         || token.ttype == constants::TOKEN_LBRACKET
     {
         parse_simple_expression(token, src, output);
+        parse_repeat(token, src, output);
     } else if token.ttype == constants::TOKEN_FCOUNT {
         parse_fcount(token, src, output);
     }
     parse::match_t(constants::TOKEN_EOF, token, src);
+}
+
+fn parse_repeat(token: &mut Token, src: &String, output: &mut String) {
+    if token.ttype == constants::TOKEN_LCBRACKET {
+        parse::match_t(constants::TOKEN_LCBRACKET, token, src);
+        parse::match_t(constants::TOKEN_NUM, token, src);
+        parse::match_t(constants::TOKEN_RCBRACKET, token, src);
+    }
 }
 
 fn parse_simple_expression(token: &mut Token, src: &String, output: &mut String) {
