@@ -1,5 +1,5 @@
 # Dicer
-version 1.0.0
+version 1.0.1
 
 ## About
 A simple library for evaluating strings representing dice rolls in rust. Dicer uses an _LL(1)_ grammar and a recursive descent parser to parse strings and
