@@ -17,3 +17,5 @@ pub const TOKEN_FCOUNT: i32 = 13;
 pub const TOKEN_SYNERR: i32 = 101;
 pub const TOKEN_RBRACKET: i32 = 102;
 pub const TOKEN_LBRACKET: i32 = 103;
+pub const TOKEN_LCBRACKET: i32 = 104;
+pub const TOKEN_RCBRACKET: i32 = 105;
