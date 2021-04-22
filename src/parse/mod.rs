@@ -6,6 +6,7 @@ use crate::lex::Token;
 
 pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) {
     let mut tok: Token;
+    let repeat = token.repeat;
     let result_sum = token.result.sum;
     let result_min = token.result.min;
     let result_max = token.result.max;
@@ -32,6 +33,7 @@ pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) {
         token.result.min = result_min;
         token.result.max = result_max;
         token.carry = carry;
+        token.repeat = repeat;
         for val in result_values {
             token.result.values.push(val);
         }

@@ -47,6 +47,19 @@ pub fn eval(src: &String) -> Result<EvalResult, EvalError> {
     let mut output = String::from("");
     parse_expression(&mut token, src, &mut output);
 
+    println!("eval::token.repeat = {}", token.repeat);
+    if token.repeat > 1 {
+        let cut: Vec<&str> = src.split("{").collect();
+        let expr = cut[0];
+        let new_src = String::from(format!("{}{{{}}}", expr, token.repeat - 1).as_str());
+
+        let mut t = nfa(&new_src, 0);
+        while t.ttype == constants::TOKEN_WS {
+            t = nfa(src, t.f);
+        }
+        eval(&new_src).unwrap();
+    }
+
     match token.ttype {
         constants::TOKEN_EOF => Ok(EvalResult {
             value: token.carry,

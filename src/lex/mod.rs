@@ -27,6 +27,7 @@ pub struct Token {
     pub attr: i32,
     pub carry: i32,
     pub result: RollResult,
+    pub repeat: i32,
     pub f: i32,
 }
 
@@ -38,6 +39,7 @@ impl Token {
             attr: 0,
             carry: 0,
             result: RollResult::new(),
+            repeat: 0,
             f: 0,
         }
     }

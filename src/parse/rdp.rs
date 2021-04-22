@@ -21,15 +21,16 @@ pub fn parse_expression(token: &mut Token, src: &String, output: &mut String) {
     parse::match_t(constants::TOKEN_EOF, token, src);
 }
 
-fn parse_repeat(token: &mut Token, src: &String, _output: &mut String) {
+fn parse_repeat(token: &mut Token, src: &String, output: &mut String) {
     if token.ttype == constants::TOKEN_LCBRACKET {
         parse::match_t(constants::TOKEN_LCBRACKET, token, src);
 
-        let repeats = token.attr;
+        token.repeat = token.attr;
+        //println!("repeat: {}", token.repeat);
+        output.push_str("; ");
 
-        if repeats > 0 {
-            // set something here to pass repeats back to caller
-        }
+        println!("token.carry: {}", token.carry);
+
         parse::match_t(constants::TOKEN_NUM, token, src);
         parse::match_t(constants::TOKEN_RCBRACKET, token, src);
     }
