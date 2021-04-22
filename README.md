@@ -10,12 +10,14 @@ simulate randomly rolled dice. See [grammar.md](https://github.com/gnullByte/dic
 use dicer::eval;
 
 fn main() {
-    let test = String::from("1d20 * (3+2) + min([2d4 - MAX], 3)");
-
+    // simple expression
+    let test = String::from("1d20 + 4 + min([2d4-MAX], 3) {3}");
     println!("parse: \"{}\"\n", test);
-    let result = eval(&test).expect("uh oh");
-    println!("{}", result.value);
-    println!("{}", result.str);
+
+    let result = eval(&test).unwrap();
+    for res in result {
+        println!("{} = {}", res.str, res.value);
+    }
 }
 ```
 
@@ -23,6 +25,5 @@ output:
 ```
 parse: "1d20 * (3+2) + min([2d4 - MAX], 3)"
 
-31
-(6) * (3 + 2) + min([ (3 + 1) -3 ], 3)
+(6) * (3 + 2) + min([ (3 + 1) -3 ], 3) = 31
 ```
