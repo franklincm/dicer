@@ -7,6 +7,7 @@ use crate::lex::Token;
 use crate::parse::rdp::parse_expression;
 use std::fmt;
 
+#[derive(Debug, Clone)]
 pub struct EvalResult {
     pub value: i32,
     pub str: String,
@@ -37,7 +38,16 @@ impl fmt::Debug for EvalError {
 /// println!("value: {}", result.value);
 /// println!("intermediate rolls: {}", result.str);
 /// ```
-pub fn eval(src: &String) -> Result<EvalResult, EvalError> {
+pub fn eval(src: &String) -> Result<Vec<EvalResult>, EvalError> {
+    let mut results: Vec<Result<EvalResult, EvalError>> = Vec::new();
+    repeat_eval(&src, &mut results);
+
+    let eval_results: Result<Vec<EvalResult>, EvalError> = results.into_iter().map(|s| s).collect();
+
+    eval_results
+}
+
+fn repeat_eval(src: &String, results: &mut Vec<Result<EvalResult, EvalError>>) {
     let mut token: Token = nfa(src, 0);
 
     while token.ttype == constants::TOKEN_WS {
@@ -47,7 +57,15 @@ pub fn eval(src: &String) -> Result<EvalResult, EvalError> {
     let mut output = String::from("");
     parse_expression(&mut token, src, &mut output);
 
-    println!("eval::token.repeat = {}", token.repeat);
+    if token.ttype == constants::TOKEN_EOF {
+        results.push(Ok(EvalResult {
+            value: token.carry,
+            str: output,
+        }));
+    } else {
+        results.push(Err(EvalError));
+    }
+
     if token.repeat > 1 {
         let cut: Vec<&str> = src.split("{").collect();
         let expr = cut[0];
@@ -57,14 +75,6 @@ pub fn eval(src: &String) -> Result<EvalResult, EvalError> {
         while t.ttype == constants::TOKEN_WS {
             t = nfa(src, t.f);
         }
-        eval(&new_src).unwrap();
-    }
-
-    match token.ttype {
-        constants::TOKEN_EOF => Ok(EvalResult {
-            value: token.carry,
-            str: output,
-        }),
-        _ => Err(EvalError),
+        repeat_eval(&new_src, results);
     }
 }
