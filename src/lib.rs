@@ -34,9 +34,10 @@ impl fmt::Debug for EvalError {
 /// ```
 /// use dicer::eval;
 /// let expr = String::from("1d20 + 4");
-/// let result = eval(&expr).unwrap();
-/// println!("value: {}", result.value);
-/// println!("intermediate rolls: {}", result.str);
+/// let results = eval(&expr).unwrap();
+/// for res in  results {
+///     println!("{} = {}", res.str, res.value);
+/// }
 /// ```
 pub fn eval(src: &String) -> Result<Vec<EvalResult>, EvalError> {
     let mut results: Vec<Result<EvalResult, EvalError>> = Vec::new();
