@@ -39,16 +39,16 @@ impl fmt::Debug for EvalError {
 ///     println!("{} = {}", res.str, res.value);
 /// }
 /// ```
-pub fn eval(src: &String) -> Result<Vec<EvalResult>, EvalError> {
+pub fn eval(src: &str) -> Result<Vec<EvalResult>, EvalError> {
     let mut results: Vec<Result<EvalResult, EvalError>> = Vec::new();
-    repeat_eval(&src, &mut results);
+    repeat_eval(src, &mut results);
 
-    let eval_results: Result<Vec<EvalResult>, EvalError> = results.into_iter().map(|s| s).collect();
+    let eval_results: Result<Vec<EvalResult>, EvalError> = results.into_iter().collect();
 
     eval_results
 }
 
-fn repeat_eval(src: &String, results: &mut Vec<Result<EvalResult, EvalError>>) {
+fn repeat_eval(src: &str, results: &mut Vec<Result<EvalResult, EvalError>>) {
     let mut token: Token = nfa(src, 0);
 
     while token.ttype == constants::TOKEN_WS {
@@ -68,7 +68,7 @@ fn repeat_eval(src: &String, results: &mut Vec<Result<EvalResult, EvalError>>) {
     }
 
     if token.repeat > 1 {
-        let cut: Vec<&str> = src.split("{").collect();
+        let cut: Vec<&str> = src.split('{').collect();
         let expr = cut[0];
         let new_src = String::from(format!("{}{{{}}}", expr, token.repeat - 1).as_str());
 

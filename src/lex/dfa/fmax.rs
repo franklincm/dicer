@@ -2,7 +2,7 @@ use crate::lex::constants;
 use crate::lex::Token;
 use std::convert::TryInto;
 
-pub fn machine(tok: &mut Token, src: &String) {
+pub fn machine(tok: &mut Token, src: &str) {
     let len: i32 = src.len().try_into().unwrap();
 
     if tok.f > len || tok.f < 0 || (len - tok.f) < 3 {

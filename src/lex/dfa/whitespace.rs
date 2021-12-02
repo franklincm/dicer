@@ -2,7 +2,7 @@ use crate::lex::constants;
 use crate::lex::Token;
 use std::convert::TryInto;
 
-pub fn machine(tok: &mut Token, src: &String) {
+pub fn machine(tok: &mut Token, src: &str) {
     let mut k = tok.f;
     let len: i32 = src.len().try_into().unwrap();
 
@@ -10,7 +10,7 @@ pub fn machine(tok: &mut Token, src: &String) {
         return;
     }
 
-    while k < len && &src.chars().nth(k.try_into().unwrap()).unwrap() == &' ' {
+    while k < len && src.chars().nth(k.try_into().unwrap()).unwrap() == ' ' {
         k += 1;
     }
 

@@ -4,7 +4,7 @@ use crate::lex::constants;
 use crate::lex::nfa;
 use crate::lex::Token;
 
-pub fn match_t<'a>(ttype: i32, token: &'a mut Token, src: &String) {
+pub fn match_t(ttype: i32, token: &mut Token, src: &str) {
     let mut tok: Token;
     let repeat = token.repeat;
     let result_sum = token.result.sum;
