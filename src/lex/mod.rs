@@ -9,6 +9,12 @@ pub struct RollResult {
     pub values: Vec<i32>,
 }
 
+impl Default for RollResult {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RollResult {
     pub fn new() -> RollResult {
         RollResult {
@@ -31,6 +37,12 @@ pub struct Token {
     pub f: i32,
 }
 
+impl Default for Token {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Token {
     pub fn new() -> Token {
         Token {
@@ -45,7 +57,7 @@ impl Token {
     }
 }
 
-pub fn nfa(src: &String, pos: i32) -> Token {
+pub fn nfa(src: &str, pos: i32) -> Token {
     let mut tok = Token::new();
     tok.f = pos;
 
