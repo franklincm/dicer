@@ -1,6 +1,6 @@
 [package]
 name = "dicer"
-version = "1.0.1"
+version = "1.0.2"
 authors = ["gnullbyte <gnullbyte@gmail.com>"]
 edition = "2018"
 description = "Dice Roller"
